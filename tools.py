@@ -146,10 +146,17 @@ def _fetch_scrape_module(src: dict) -> list[dict]:
         return []
 
 
-def search_source(source_id: str) -> str:
+def _keyword_match(title: str, summary: str) -> bool:
+    """Return True if the article matches any keyword across any category."""
+    from keywords import match_article
+    return bool(match_article(title, summary))
+
+
+def search_source(source_id: str, keyword_filter: bool = False) -> str:
     """
     Fetch recent articles from a named source.
     Returns a plain-text formatted list of articles (title, URL, brief excerpt).
+    If keyword_filter is True, only articles matching policy keywords are returned.
     If no recent articles are found, says so.
     """
     src = _get_source(source_id)
@@ -170,6 +177,9 @@ def search_source(source_id: str) -> str:
         items = _fetch_rss(src)
     elif src.get("news_url"):
         items = _fetch_page_articles(src)
+
+    if keyword_filter:
+        items = [i for i in items if _keyword_match(i["title"], i.get("summary", ""))]
 
     paywall_note = " [PAYWALLED]" if src.get("paywalled") else ""
     header = f"=== {src['name']}{paywall_note} ===\n"

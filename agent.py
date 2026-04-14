@@ -34,6 +34,9 @@ sequentially using the search_source tool. For the most important articles \
 (typically 3–6 per topic area), use fetch_article to read the full content \
 before writing your takeaways.
 
+Begin your response DIRECTLY with the line "# SB Policy Brief — [Full Date]". \
+Do not include any preamble, commentary, or self-narration before the brief.
+
 Output Format — produce EXACTLY this structure in Markdown:
 
 # SB Policy Brief — [Full Date]
@@ -49,7 +52,8 @@ Output Format — produce EXACTLY this structure in Markdown:
 2. **[Headline takeaway]** — [1–2 sentences]
 
 (3–5 takeaways max. Only include if there is genuinely relevant news today. \
-If nothing significant, write: *No significant developments today.*)
+If nothing significant, write: *No significant developments today.* \
+Do NOT list which sources had no content.)
 
 **What to Watch**
 
@@ -63,7 +67,8 @@ If nothing significant, write: *No significant developments today.*)
 
 1. **[Headline takeaway]** — [1–2 sentences]
 
-(3–5 max)
+(3–5 max. If nothing significant, write: *No significant developments today.* \
+Do NOT list which sources had no content.)
 
 **What to Watch**
 
@@ -77,7 +82,8 @@ If nothing significant, write: *No significant developments today.*)
 
 1. **[Headline takeaway]** — [1–2 sentences]
 
-(3–5 max)
+(3–5 max. If nothing significant, write: *No significant developments today.* \
+Do NOT list which sources had no content.)
 
 **What to Watch**
 
@@ -87,8 +93,9 @@ If nothing significant, write: *No significant developments today.*)
 
 ## Client Mentions
 
-List any mentions of Springboard's clients. If none, write: \
-*No client mentions today.*
+List any mentions of Springboard's clients. \
+If none found, write only: *No client mentions today.* \
+Do NOT list each client individually with "no mentions found."
 
 Clients to watch: Nunavut Tunngavik Incorporated (NTI), Prosper Canada, \
 Canadian Centre for Caregiving Excellence, Future Skills Centre (FSC), \
@@ -105,6 +112,7 @@ Guidelines:
   context that a policy professional already knows.
 - Prioritize Canadian federal and provincial policy context.
 - If multiple sources cover the same story, merge them into one takeaway.
+- For committee submission deadlines, one line only: committee name + date.
 - Flag paywalled sources with [PAYWALLED] in the sources list.
 - Only include sources where you actually found relevant content.
 """
@@ -220,11 +228,15 @@ TOOLS = [
 
 # ── Tool dispatcher ───────────────────────────────────────────────────────────
 
+GENERAL_SOURCES = set(SOURCES_BY_TOPIC["General (all topics)"])
+
+
 def _run_tool(name: str, inputs: dict) -> str:
     if name == "search_source":
         source_id = inputs.get("source_id", "")
         print(f"    → search_source({source_id})")
-        return search_source(source_id)
+        keyword_filter = source_id in GENERAL_SOURCES
+        return search_source(source_id, keyword_filter=keyword_filter)
     elif name == "fetch_article":
         url = inputs.get("url", "")
         print(f"    → fetch_article({url[:80]}...)")
