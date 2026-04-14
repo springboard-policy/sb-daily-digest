@@ -194,6 +194,16 @@ def _to_html(markdown_text: str) -> str:
 
 # ── Main ─────────────────────────────────────────────────────────────────────
 
+def _already_ran_today(date_str: str) -> str | None:
+    """Return saved markdown if today's brief already exists, else None."""
+    md_path = f"brief_{date_str}.md"
+    if os.path.exists(md_path):
+        print(f"  Brief for {date_str} already exists — skipping agent.")
+        with open(md_path, encoding="utf-8") as f:
+            return f.read()
+    return None
+
+
 def generate() -> str:
     today = date.today()
     date_str  = today.isoformat()
@@ -202,11 +212,13 @@ def generate() -> str:
     print(f"\nSpringboard Daily Digest — {date_long}")
     print("=" * 50)
 
-    try:
-        briefing_md = run_briefing()
-    except RuntimeError as e:
-        print(f"\nERROR: {e}", file=sys.stderr)
-        sys.exit(1)
+    briefing_md = _already_ran_today(date_str)
+    if briefing_md is None:
+        try:
+            briefing_md = run_briefing()
+        except RuntimeError as e:
+            print(f"\nERROR: {e}", file=sys.stderr)
+            sys.exit(1)
 
     body_html = _to_html(briefing_md)
 
