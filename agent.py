@@ -13,6 +13,7 @@ Requires ANTHROPIC_API_KEY in the environment.
 
 import os
 import sys
+import time
 from datetime import date
 
 import anthropic
@@ -271,13 +272,22 @@ def run_briefing() -> str:
     while iteration < max_iterations:
         iteration += 1
 
-        response = client.messages.create(
-            model=MODEL,
-            max_tokens=4096,
-            system=SYSTEM_PROMPT,
-            tools=TOOLS,
-            messages=messages,
-        )
+        for attempt in range(5):
+            try:
+                response = client.messages.create(
+                    model=MODEL,
+                    max_tokens=4096,
+                    system=SYSTEM_PROMPT,
+                    tools=TOOLS,
+                    messages=messages,
+                )
+                break
+            except anthropic.RateLimitError:
+                wait = 60 * (attempt + 1)
+                print(f"  Rate limit hit — waiting {wait}s before retry...")
+                time.sleep(wait)
+        else:
+            return "Error: rate limit retries exhausted."
 
         # Collect any text blocks for potential early-exit inspection
         text_blocks = [b for b in response.content if b.type == "text"]
