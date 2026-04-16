@@ -59,10 +59,10 @@ Output Format — produce EXACTLY this structure in Markdown:
 
 ## Skills Policy & Workforce Development
 
-1. **[Headline]** — [One sentence: what happened, with an inline link]
+1. **[Headline as a hyperlink](url)** — [One sentence: what happened, no link needed here]
    *[One sentence: why it matters, what it signals, or how it develops a recent trend]*
 
-2. **[Headline]** — ...
+2. **[Headline as a hyperlink](url)** — ...
    *...*
 
 (4–5 items. Only include genuinely relevant developments. \
@@ -72,7 +72,7 @@ If nothing significant: *No significant developments today.*)
 
 ## Northern & Arctic Infrastructure
 
-1. **[Headline]** — [One sentence: what happened, with an inline link]
+1. **[Headline as a hyperlink](url)** — [One sentence: what happened, no link needed here]
    *[One sentence: significance or connection to recent context]*
 
 (4–5 items. Lead with Yukon, NWT, Nunavut, or circumpolar/Arctic items. \
@@ -83,7 +83,7 @@ If nothing significant: *No significant developments today.*)
 
 ## Social Assistance & Income Security
 
-1. **[Headline]** — [One sentence: what happened, with an inline link]
+1. **[Headline as a hyperlink](url)** — [One sentence: what happened, no link needed here]
    *[One sentence: significance or connection to recent context]*
 
 (4–5 items. If nothing significant: *No significant developments today.*)
@@ -115,7 +115,9 @@ Inuit Tapiriit Kanatami (ITK), Century Initiative, 369 Global.
 
 Guidelines:
 - Each item is exactly two lines: a news line and an analysis line.
-- News line: one sentence stating what happened, with an inline link.
+- News line: the headline itself is the hyperlink (bold linked text), followed \
+  by a dash and one sentence stating what happened. Do not add a second link \
+  in the sentence (e.g. no "read the report" or "see here" links).
 - Analysis line (italicised): one sentence on significance, policy implication, \
   or broader context — draw on your knowledge of Canadian policy, relevant \
   research, historical precedents, institutional dynamics, or recent trends \
