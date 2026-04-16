@@ -124,6 +124,16 @@ Guidelines:
 - 4–5 items per section; include 5 only if all are genuinely important.
 - Be direct. Cut throat-clearing and context a policy professional already knows.
 - If multiple sources cover the same story, merge into one item.
+- Section placement: put each story in the section that matches its primary \
+  subject matter. An environmental or resource development story belongs in \
+  Northern & Arctic Infrastructure even if it has secondary social consequences. \
+  A story does not belong in Social Assistance unless it directly concerns \
+  income support, benefits, poverty, housing assistance, or social services. \
+  If your own analysis says "this is primarily an X story," place it in X.
+- Exclude procedural stories: do NOT include Access to Information requests, \
+  routine government appointments, administrative decisions, or process stories \
+  unless they directly reveal substantive new policy content relevant to the \
+  three topic areas.
 - Committee submission deadlines: news line only (committee + deadline date), \
   analysis line explains why it is relevant to Springboard's clients or topics.
 - Flag paywalled sources with [PAYWALLED] in the Sources Consulted list.
