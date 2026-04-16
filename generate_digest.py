@@ -25,7 +25,7 @@ except ImportError:
 
 import markdown as md
 
-from agent import run_briefing
+from agent import run_briefing, get_last_run_cost
 
 # ── HTML wrapper template ─────────────────────────────────────────────────────
 
@@ -175,7 +175,7 @@ HTML_TEMPLATE = """\
 </main>
 
 <footer class="page-footer">
-  Generated {date_str} &nbsp;&middot;&nbsp; Springboard Daily Policy Brief
+  Generated {date_str} &nbsp;&middot;&nbsp; Springboard Daily Policy Brief{cost_info}
 </footer>
 
 </body>
@@ -227,10 +227,14 @@ def generate() -> str:
 
     body_html = _to_html(briefing_md)
 
+    cost = get_last_run_cost()
+    cost_info = f" &nbsp;&middot;&nbsp; {cost}" if cost else ""
+
     html = HTML_TEMPLATE.format(
         date_str=date_str,
         date_long=date_long,
         body=body_html,
+        cost_info=cost_info,
     )
 
     os.makedirs("docs", exist_ok=True)

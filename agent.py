@@ -297,6 +297,24 @@ def _run_tool(name: str, inputs: dict) -> str:
         return f"Unknown tool: {name}"
 
 
+# ── Public accessors ─────────────────────────────────────────────────────────
+
+def get_last_run_cost() -> str:
+    """
+    Return a short cost string for the most recent run_briefing() call,
+    e.g. '127,430 tokens · ~$0.43'.  Returns '' if no tokens were used
+    (e.g. brief was loaded from cache).
+    """
+    total = _usage["input_tokens"] + _usage["output_tokens"]
+    if total == 0:
+        return ""
+    cost = (
+        _usage["input_tokens"]  / 1_000_000 * _COST_PER_M_INPUT +
+        _usage["output_tokens"] / 1_000_000 * _COST_PER_M_OUTPUT
+    )
+    return f"{total:,} tokens &middot; ~${cost:.2f}"
+
+
 # ── Logging helpers ───────────────────────────────────────────────────────────
 
 def _log_run(date_str: str, iterations: int) -> None:
