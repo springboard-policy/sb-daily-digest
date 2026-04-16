@@ -5,7 +5,8 @@ Runs the briefing agent, converts the markdown output to a styled HTML page,
 and saves it to docs/index.html (and a dated archive file).
 
 Run:
-    python generate_digest.py
+    python generate_digest.py           # normal run (skips if today's brief exists)
+    python generate_digest.py --force   # re-run even if today's brief already exists
 
 Requires ANTHROPIC_API_KEY in the environment or a .env file.
 """
@@ -211,7 +212,7 @@ def _already_ran_today(date_str: str) -> str | None:
     return None
 
 
-def generate() -> str:
+def generate(force: bool = False) -> str:
     today = date.today()
     date_str  = today.isoformat()
     date_long = today.strftime("%A, %B %d, %Y")
@@ -219,7 +220,7 @@ def generate() -> str:
     print(f"\nSpringboard Daily Digest — {date_long}")
     print("=" * 50)
 
-    briefing_md = _already_ran_today(date_str)
+    briefing_md = None if force else _already_ran_today(date_str)
     if briefing_md is None:
         try:
             briefing_md = run_briefing()
@@ -329,7 +330,10 @@ def _build_archive() -> None:
 
 
 if __name__ == "__main__":
-    path = generate()
+    force = "--force" in sys.argv
+    if force:
+        print("  [--force] Skipping cache check — re-running agent.")
+    path = generate(force=force)
     print(f"\nDone. Saved to: {path}")
     print(f"Also written to: docs/index.html")
     print(f"Open with: start {path}")

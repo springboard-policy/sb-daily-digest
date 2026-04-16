@@ -5,6 +5,11 @@ on:
     # 13:30 UTC = 8:30 AM EST (winter) / 9:30 AM EDT (summer)
     - cron: '30 13 * * 1-5'
   workflow_dispatch:           # manual trigger from GitHub Actions tab
+    inputs:
+      force:
+        description: 'Re-run even if today''s brief already exists'
+        type: boolean
+        default: false
 
 jobs:
   generate:
@@ -25,7 +30,7 @@ jobs:
       - name: Generate brief
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: python generate_digest.py
+        run: python generate_digest.py ${{ inputs.force && '--force' || '' }}
 
       - name: Commit and push output
         run: |
