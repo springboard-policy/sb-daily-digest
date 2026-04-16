@@ -5,7 +5,14 @@ Tier rules:
   CORE  — always include if any CORE keyword from this category matches.
   FUZZY — include if this keyword + 2 others from this category match (3 total).
   WATCH — include if this keyword + 1 other from this category matches (2 total).
+
+Matching rules:
+  Short all-caps acronyms (e.g. EI, ESDC) are matched as whole words using
+  regex word boundaries to avoid false positives from substrings.
+  All other keywords use simple substring matching (case-insensitive).
 """
+
+import re
 
 KEYWORDS = {
     "Northern infrastructure": {
@@ -112,11 +119,9 @@ KEYWORDS = {
             "welfare",
             "income support",
             "Ontario Works",
-            "OW",
             "ODSP",
             "disability benefit",
             "Canada Disability Benefit",
-            "CDB",
             "guaranteed income",
             "basic income",
             "food insecurity",
@@ -143,8 +148,6 @@ KEYWORDS = {
             "marginalized",
             "vulnerable populations",
             "equity-deserving",
-            "GIS",
-            "CCB",
             "disability",
             "shelter allowance",
             "top-up",
@@ -170,6 +173,20 @@ KEYWORDS = {
 }
 
 
+def _kw_matches(kw: str, text: str, text_lower: str) -> bool:
+    """
+    Return True if kw appears in text.
+
+    Short all-caps acronyms (e.g. EI, ESDC, ODSP) are matched as whole words
+    to avoid false positives from substrings like 'their' matching 'EI' or
+    'allowed' matching the removed 'OW'.  All other keywords use fast
+    case-insensitive substring matching.
+    """
+    if kw.isupper() and len(kw) <= 5:
+        return bool(re.search(r'\b' + re.escape(kw) + r'\b', text, re.IGNORECASE))
+    return kw.lower() in text_lower
+
+
 def match_article(title: str, text: str) -> dict:
     """
     Check an article against all keyword categories.
@@ -182,7 +199,8 @@ def match_article(title: str, text: str) -> dict:
       FUZZY match -> include if 3+ total keywords from this category match
       WATCH match -> include if 2+ total keywords from this category match
     """
-    combined = (title + " " + (text or "")).lower()
+    combined = title + " " + (text or "")
+    combined_lower = combined.lower()
     results = {}
 
     for category, tiers in KEYWORDS.items():
@@ -190,7 +208,7 @@ def match_article(title: str, text: str) -> dict:
 
         for tier, keywords in tiers.items():
             for kw in keywords:
-                if kw.lower() in combined:
+                if _kw_matches(kw, combined, combined_lower):
                     matched[tier].append(kw)
 
         total = sum(len(v) for v in matched.values())

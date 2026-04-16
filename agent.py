@@ -93,9 +93,17 @@ Do NOT list which sources had no content.)
 
 ## Client Mentions
 
-List any mentions of Springboard's clients. \
-If none found, write only: *No client mentions today.* \
-Do NOT list each client individually with "no mentions found."
+List any articles or announcements that mention one of Springboard's clients \
+by name. Format: **Client name** — one sentence summary with an inline link.
+
+If no clients were mentioned in any source today, write only: \
+*No client mentions today.*
+
+IMPORTANT: Do NOT list clients individually. Do NOT write "no mentions found" \
+for any client. Do NOT distinguish between clients that are also source feeds \
+(ITK, NTI, FSC) and those that are not — treat all clients the same way. \
+Either a client was mentioned in an article today, or it was not. \
+If none were mentioned, use only the single line above.
 
 Clients to watch: Nunavut Tunngavik Incorporated (NTI), Prosper Canada, \
 Canadian Centre for Caregiving Excellence, Future Skills Centre (FSC), \
@@ -115,6 +123,11 @@ Guidelines:
 - For committee submission deadlines, one line only: committee name + date.
 - Flag paywalled sources with [PAYWALLED] in the sources list.
 - Only include sources where you actually found relevant content.
+- Links: include inline hyperlinks within takeaway text whenever you are \
+  citing a specific article, document, or announcement. Link the most \
+  relevant phrase (e.g. the bill name, headline, or org name), not the whole \
+  sentence. If a takeaway synthesizes multiple articles, link the primary \
+  source inline and list the rest in Sources Consulted.
 """
 
 # ── Source list organized by topic ───────────────────────────────────────────
@@ -128,6 +141,7 @@ SOURCES_BY_TOPIC = {
         "transport_canada",
         "global_affairs",
         "cannor",
+        "norad",
         "cbc_north",
         "nunatsiaq",
         "high_north_news",
@@ -136,11 +150,16 @@ SOURCES_BY_TOPIC = {
         "itk",
         "nti",
         "inuvialuit",
+        "makivik",
+        "nunatsiavut",
+        "dehcho",
         "yukon_govt",
         "nwt_govt",
         "nunavut_govt",
+        "nunavut_housing",
         "arctic_council",
         "arctic_institute",
+        "arctic_journal",
         "atlantic_council",
     ],
     "Skills Policy & Workforce Development": [
@@ -154,6 +173,9 @@ SOURCES_BY_TOPIC = {
         "ilo",
         "statcan",
         "cpp_journal",
+        "ontario_newsroom",
+        "bc_newsroom",
+        "alberta_govt",
     ],
     "Social Assistance & Income Security": [
         "canada_gazette",
@@ -166,12 +188,17 @@ SOURCES_BY_TOPIC = {
         "oecd_social",
         "metis_national",
         "nwac",
+        "cap",
         "pbo",
         "auditor_general",
+        "ontario_newsroom",
+        "bc_newsroom",
+        "alberta_govt",
     ],
     "General (all topics)": [
         "canada_ca_news",
         "cbc_news",
+        "canadian_press",
         "policy_options",
         "hill_times",
         "ipolitics",
@@ -179,6 +206,7 @@ SOURCES_BY_TOPIC = {
         "national_post",
         "globe_mail",
         "macleans",
+        "the_tyee",
         "afn",
         "hoc",
         "senate",

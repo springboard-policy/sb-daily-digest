@@ -2,8 +2,9 @@ name: Springboard Daily Policy Brief
 
 on:
   schedule:
-    # 15:00 UTC = 10:00 AM EST / 11:00 AM EDT
-    - cron: '0 15 * * 1-5'   # weekdays only
+    # 8:30 AM ET year-round (two entries to account for DST)
+    - cron: '30 12 * 3-10 1-5'    # Mar–Oct: 12:30 UTC = 8:30 AM EDT
+    - cron: '30 13 * 1,2,11,12 1-5'  # Nov–Feb: 13:30 UTC = 8:30 AM EST
   workflow_dispatch:           # manual trigger from GitHub Actions tab
 
 jobs:
