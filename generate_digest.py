@@ -37,15 +37,18 @@ HTML_TEMPLATE = """\
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SB Policy Brief — {date_str}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
 
     body {{
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      font-size: 16px;
-      line-height: 1.6;
-      background: #f5f4f2;
-      color: #1a1a1a;
+      font-family: "Inter", system-ui, -apple-system, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+      background: #f4f3f0;
+      color: #1c1c1c;
     }}
 
     /* ── Header ── */
@@ -53,51 +56,61 @@ HTML_TEMPLATE = """\
       background: #1a2b3c;
       color: #fff;
       padding: 1.5rem 2.5rem 1.25rem;
-      border-bottom: 4px solid #c8a951;
+      border-bottom: 3px solid #c8a951;
     }}
     .page-header .org {{
-      font-size: 0.72rem;
-      letter-spacing: 0.12em;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      opacity: 0.55;
-      margin-bottom: 0.25rem;
+      opacity: 0.5;
+      margin-bottom: 0.3rem;
     }}
-    .page-header h1 {{ font-size: 1.4rem; font-weight: 700; }}
-    .page-header .dateline {{ font-size: 0.875rem; opacity: 0.65; margin-top: 0.2rem; }}
-    .page-header .archive-link {{ font-size: 0.75rem; opacity: 0.5; margin-top: 0.35rem; }}
+    .page-header h1 {{
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }}
+    .page-header .dateline {{
+      font-size: 0.85rem;
+      font-weight: 400;
+      opacity: 0.6;
+      margin-top: 0.2rem;
+    }}
+    .page-header .archive-link {{
+      font-size: 0.75rem;
+      opacity: 0.45;
+      margin-top: 0.4rem;
+    }}
     .page-header .archive-link a {{
       color: #fff;
       text-decoration: none;
-      border-bottom: 1px solid rgba(255,255,255,0.3);
+      border-bottom: 1px solid rgba(255,255,255,0.25);
     }}
     .page-header .archive-link a:hover {{ opacity: 1; border-bottom-color: #c8a951; }}
 
     /* ── Layout ── */
     .content {{
-      max-width: 800px;
-      margin: 2rem auto;
-      padding: 0 1.5rem 4rem;
+      max-width: 760px;
+      margin: 2.5rem auto;
+      padding: 0 1.5rem 5rem;
     }}
 
     /* ── Section headings ── */
     .brief h2 {{
-      font-size: 0.8rem;
+      font-size: 0.7rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
       color: #1a2b3c;
-      margin: 2.5rem 0 1rem;
-      padding-bottom: 0.4rem;
+      margin: 3rem 0 0;
+      padding-bottom: 0.5rem;
       border-bottom: 2px solid #c8a951;
     }}
 
-    /* ── Dividers between sections ── */
-    .brief hr {{
-      border: none;
-      margin: 0;
-    }}
+    .brief hr {{ display: none; }}
 
-    /* ── Numbered item lists ── */
+    /* ── Numbered items ── */
     .brief ol {{
       list-style: none;
       padding: 0;
@@ -106,18 +119,20 @@ HTML_TEMPLATE = """\
     }}
     .brief ol > li {{
       counter-increment: brief-item;
-      display: grid;
-      grid-template-columns: 1.5rem 1fr;
-      gap: 0 0.5rem;
-      padding: 0.9rem 0;
-      border-bottom: 1px solid #e8e6e2;
+      position: relative;
+      padding: 1rem 0 1rem 2.25rem;
+      border-bottom: 1px solid #e5e3de;
     }}
     .brief ol > li::before {{
       content: counter(brief-item);
-      font-size: 0.75rem;
+      position: absolute;
+      left: 0;
+      top: 1.1rem;
+      font-size: 0.7rem;
       font-weight: 700;
       color: #c8a951;
-      padding-top: 0.15rem;
+      width: 1.5rem;
+      text-align: right;
     }}
     .brief ol > li p {{
       margin: 0 0 0.3rem;
@@ -126,39 +141,38 @@ HTML_TEMPLATE = """\
     .brief ol > li em {{
       font-style: italic;
       color: #555;
-      font-size: 0.95rem;
+      font-size: 0.925rem;
+      line-height: 1.55;
     }}
 
     /* ── Bullet lists (Sources Consulted) ── */
     .brief ul {{
-      padding-left: 1.25rem;
-      margin: 0;
+      padding-left: 1rem;
+      margin: 0.5rem 0 0;
     }}
     .brief ul li {{
-      margin-bottom: 0.4rem;
-      font-size: 0.9rem;
-      color: #444;
+      margin-bottom: 0.35rem;
+      font-size: 0.875rem;
+      color: #555;
     }}
 
-    /* ── Inline elements ── */
+    /* ── Inline ── */
     .brief a {{ color: #1a5c9e; text-decoration: none; }}
     .brief a:hover {{ text-decoration: underline; }}
-    .brief p {{ margin-bottom: 0.6rem; }}
-
-    /* Italic "no content" notes */
-    .brief > div > em, .brief ol + p > em {{ color: #888; font-size: 0.95rem; }}
+    .brief p {{ margin-bottom: 0.5rem; }}
+    .brief em {{ color: #777; }}
 
     /* ── Footer ── */
     .page-footer {{
       text-align: center;
-      font-size: 0.78rem;
-      color: #aaa;
+      font-size: 0.75rem;
+      color: #b0b0b0;
       padding: 1.5rem;
-      border-top: 1px solid #e0e0e0;
+      border-top: 1px solid #e0ded9;
     }}
 
     @media (max-width: 600px) {{
-      .page-header {{ padding: 1rem; }}
+      .page-header {{ padding: 1.25rem 1rem; }}
       .content {{ padding: 0 1rem 3rem; }}
     }}
   </style>
@@ -289,28 +303,31 @@ def _build_archive() -> None:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SB Policy Brief — Archive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
     body {{
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      font-size: 16px;
-      line-height: 1.6;
-      background: #f5f4f2;
-      color: #1a1a1a;
+      font-family: "Inter", system-ui, -apple-system, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+      background: #f4f3f0;
+      color: #1c1c1c;
     }}
-    .page-header {{ background: #1a2b3c; color: #fff; padding: 1.5rem 2.5rem 1.25rem; border-bottom: 4px solid #c8a951; }}
-    .page-header .org {{ font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.55; margin-bottom: 0.25rem; }}
-    .page-header h1 {{ font-size: 1.4rem; font-weight: 700; }}
-    .page-header .sub {{ font-size: 0.875rem; opacity: 0.65; margin-top: 0.2rem; }}
+    .page-header {{ background: #1a2b3c; color: #fff; padding: 1.5rem 2.5rem 1.25rem; border-bottom: 3px solid #c8a951; }}
+    .page-header .org {{ font-size: 0.68rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.5; margin-bottom: 0.3rem; }}
+    .page-header h1 {{ font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; }}
+    .page-header .sub {{ font-size: 0.85rem; opacity: 0.6; margin-top: 0.2rem; }}
     .page-header .sub a {{ color: #fff; text-decoration: none; }}
-    .content {{ max-width: 600px; margin: 2rem auto; padding: 0 1.5rem 4rem; }}
-    h2 {{ font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
-          color: #1a2b3c; border-bottom: 2px solid #c8a951; padding-bottom: 0.4rem; margin-bottom: 1rem; }}
+    .content {{ max-width: 560px; margin: 2.5rem auto; padding: 0 1.5rem 4rem; }}
+    h2 {{ font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+          color: #1a2b3c; border-bottom: 2px solid #c8a951; padding-bottom: 0.5rem; margin-bottom: 1.25rem; }}
     ul {{ list-style: none; padding: 0; }}
-    li {{ padding: 0.6rem 0; border-bottom: 1px solid #e8e6e2; font-size: 0.95rem; }}
+    li {{ padding: 0.65rem 0; border-bottom: 1px solid #e5e3de; font-size: 0.95rem; }}
     a {{ color: #1a5c9e; text-decoration: none; }}
     a:hover {{ text-decoration: underline; }}
-    .page-footer {{ text-align: center; font-size: 0.78rem; color: #aaa; padding: 1.5rem; border-top: 1px solid #e0e0e0; }}
+    .page-footer {{ text-align: center; font-size: 0.75rem; color: #b0b0b0; padding: 1.5rem; border-top: 1px solid #e0ded9; }}
   </style>
 </head>
 <body>
