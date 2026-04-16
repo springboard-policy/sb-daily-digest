@@ -135,15 +135,22 @@ HTML_TEMPLATE = """\
       text-align: right;
     }}
     .brief ol > li p {{
-      margin: 0 0 0.3rem;
-      font-size: 0.9rem;
+      margin: 0 0 0.5rem;
+      font-size: 0.85rem;
     }}
     .brief ol > li p:last-child {{ margin-bottom: 0; }}
     .brief ol > li em {{
       font-style: italic;
       color: #555;
-      font-size: 0.925rem;
+      font-size: 0.85rem;
       line-height: 1.55;
+    }}
+    /* Prepend "Analysis:" to the italic analysis line */
+    .brief ol > li p:last-child:not(:first-child) > em:only-child::before {{
+      content: "Analysis: ";
+      font-weight: 600;
+      font-style: normal;
+      color: #1c1c1c;
     }}
 
     /* ── Bullet lists (Sources Consulted) ── */
