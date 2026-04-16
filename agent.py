@@ -36,8 +36,10 @@ You are a Canadian policy intelligence agent for Springboard, a public policy \
 consulting firm. Your job is to scan policy news sources and produce a concise \
 analytical briefing suitable for a professional policy audience.
 
-You will be given a list of sources to search. Search them ONE AT A TIME \
-sequentially using the search_source tool. For the most important articles \
+You will be given a list of sources to search. Use the search_source tool \
+to fetch them — you may call multiple search_source tools in a single turn \
+to search several sources in parallel. A good batch size is 6–10 sources \
+per turn, grouped by topic. For the most important articles \
 (typically 3–6 per topic area), use fetch_article to read the full content \
 before writing your items.
 
@@ -115,8 +117,10 @@ Guidelines:
 - Each item is exactly two lines: a news line and an analysis line.
 - News line: one sentence stating what happened, with an inline link.
 - Analysis line (italicised): one sentence on significance, policy implication, \
-  or connection to a recent trend from the past briefs provided. This line \
-  should add something the news line does not — do not just restate the news.
+  or broader context — draw on your knowledge of Canadian policy, relevant \
+  research, historical precedents, institutional dynamics, or recent trends \
+  from the past briefs. This line should add something the news line does not \
+  — do not just restate the news.
 - 4–5 items per section; include 5 only if all are genuinely important.
 - Be direct. Cut throat-clearing and context a policy professional already knows.
 - If multiple sources cover the same story, merge into one item.
@@ -221,9 +225,11 @@ TOOLS = [
     {
         "name": "search_source",
         "description": (
-            "Fetch recent articles (last 28 hours) from a specific policy source. "
+            "Fetch recent articles from a specific policy source. "
+            "On most days covers the last 24 hours; on Mondays covers 72 hours (Fri–Sun). "
             "Pass the source ID exactly as given in the source list. "
-            "Returns a list of recent article titles, URLs, and excerpts."
+            "Returns a list of recent article titles, URLs, and excerpts. "
+            "On Mondays, each article includes its publication day in brackets."
         ),
         "input_schema": {
             "type": "object",
@@ -436,14 +442,26 @@ def run_briefing(fixtures_path: str | None = None) -> str:
     else:
         context_block = ""
 
+    is_monday = date.today().weekday() == 0
+
     task_message = (
         f"Today is {today_str}.\n\n"
         f"Please produce the daily Springboard policy brief.\n\n"
-        f"Search the following sources one at a time using search_source, "
+        f"Search the following sources using search_source "
+        f"(parallel batches of 6–10 per turn), "
         f"then fetch full articles for the most important items:\n"
         f"{sources_text}\n\n"
         f"After searching all sources, write the briefing note."
     )
+
+    if is_monday:
+        task_message += (
+            "\n\nIMPORTANT: Today is Monday. The sources cover the past 72 hours "
+            "(Friday through Sunday). Each article result includes its publication "
+            "day in brackets — e.g. [Friday], [Saturday], [Sunday]. "
+            "Include the day in the news line for each item, like this: "
+            "**[Friday] Headline** — one sentence with inline link."
+        )
 
     # Structure messages so the stable context block and system prompt are
     # cached — saves ~90% on their tokens for iterations 2–N of the agent loop.
@@ -479,7 +497,7 @@ def run_briefing(fixtures_path: str | None = None) -> str:
             try:
                 response = client.messages.create(
                     model=MODEL,
-                    max_tokens=4096,
+                    max_tokens=8192,
                     system=system_param,
                     tools=TOOLS,
                     messages=messages,

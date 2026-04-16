@@ -22,7 +22,11 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (compatible; sb-digest-bot/1.0; for internal research)"
 }
 TIMEOUT = 20
-LOOKBACK_HOURS = 24
+
+
+def _get_lookback_hours() -> int:
+    """72h on Mondays (covers Fri/Sat/Sun), 24h on all other weekdays."""
+    return 72 if datetime.now().weekday() == 0 else 24
 
 
 # ── search_source ─────────────────────────────────────────────────────────────
@@ -39,7 +43,8 @@ def _get_source(source_id: str) -> dict | None:
 def _fetch_rss(src: dict) -> list[dict]:
     """Return recent items from an RSS/Atom feed."""
     import feedparser
-    cutoff = datetime.now(timezone.utc) - timedelta(hours=LOOKBACK_HOURS)
+    lookback = _get_lookback_hours()
+    cutoff = datetime.now(timezone.utc) - timedelta(hours=lookback)
     try:
         try:
             resp = requests.get(src["rss_url"], headers=HEADERS, timeout=TIMEOUT, verify=True)
@@ -56,6 +61,7 @@ def _fetch_rss(src: dict) -> list[dict]:
         url   = (getattr(entry, "link",  "") or "").strip()
         if not title or not url:
             continue
+        pub = None
         for field in ("published_parsed", "updated_parsed"):
             t = getattr(entry, field, None)
             if t:
@@ -75,7 +81,8 @@ def _fetch_rss(src: dict) -> list[dict]:
                 summary = re.sub(r"<[^>]+>", " ", val)
                 summary = re.sub(r"\s+", " ", summary).strip()[:300]
                 break
-        items.append({"title": title, "url": url, "summary": summary})
+        pub_day = pub.strftime("%A") if pub else ""
+        items.append({"title": title, "url": url, "summary": summary, "pub_day": pub_day})
     return items
 
 
@@ -181,15 +188,18 @@ def search_source(source_id: str, keyword_filter: bool = False) -> str:
     if keyword_filter:
         items = [i for i in items if _keyword_match(i["title"], i.get("summary", ""))]
 
+    lookback = _get_lookback_hours()
     paywall_note = " [PAYWALLED]" if src.get("paywalled") else ""
     header = f"=== {src['name']}{paywall_note} ===\n"
 
     if not items:
-        return header + "No recent articles found in the last 28 hours.\n"
+        return header + f"No recent articles found in the last {lookback} hours.\n"
 
+    extended = lookback > 24  # Monday: show publication day on each item
     lines = [header]
     for i, item in enumerate(items[:8], 1):
-        lines.append(f"{i}. {item['title']}")
+        day_note = f" [{item['pub_day']}]" if extended and item.get("pub_day") else ""
+        lines.append(f"{i}. {item['title']}{day_note}")
         lines.append(f"   URL: {item['url']}")
         if item.get("summary"):
             lines.append(f"   Excerpt: {item['summary']}")
