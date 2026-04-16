@@ -258,16 +258,22 @@ TOOLS = [
 
 GENERAL_SOURCES = set(SOURCES_BY_TOPIC["General (all topics)"])
 
+_stats: dict = {"searched": 0, "with_content": 0}
+
 
 def _run_tool(name: str, inputs: dict) -> str:
     if name == "search_source":
         source_id = inputs.get("source_id", "")
-        print(f"    → search_source({source_id})")
+        print(f"    -> search_source({source_id})")
         keyword_filter = source_id in GENERAL_SOURCES
-        return search_source(source_id, keyword_filter=keyword_filter)
+        result = search_source(source_id, keyword_filter=keyword_filter)
+        _stats["searched"] += 1
+        if "No recent articles found" not in result:
+            _stats["with_content"] += 1
+        return result
     elif name == "fetch_article":
         url = inputs.get("url", "")
-        print(f"    → fetch_article({url[:80]}...)")
+        print(f"    -> fetch_article({url[:80]}...)")
         return fetch_article(url)
     else:
         return f"Unknown tool: {name}"
@@ -280,6 +286,9 @@ def run_briefing() -> str:
     Run the full briefing agent. Returns the markdown briefing as a string.
     Raises RuntimeError if ANTHROPIC_API_KEY is not set.
     """
+    global _stats
+    _stats = {"searched": 0, "with_content": 0}
+
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         raise RuntimeError(
@@ -341,6 +350,11 @@ def run_briefing() -> str:
             # Agent is done — return the text
             briefing = "\n\n".join(b.text for b in text_blocks).strip()
             print(f"  Agent finished after {iteration} iteration(s).")
+            # Append source volume stat
+            briefing += (
+                f"\n\n---\n*{_stats['with_content']} of {_stats['searched']} "
+                f"sources had new content today.*"
+            )
             return briefing
 
         # Handle tool calls

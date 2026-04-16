@@ -47,8 +47,12 @@ jobs:
 
       - name: Generate brief
         if: steps.timecheck.outputs.should_run == 'true'
+        id: generate
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          EMAIL_FROM:        ${{ secrets.EMAIL_FROM }}
+          EMAIL_PASSWORD:    ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_TO:          khiran@springboardpolicy.com
         run: python generate_digest.py
 
       - name: Commit and push output
@@ -56,6 +60,33 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/index.html brief_*.md
+          git add docs/ brief_*.md
           git diff --cached --quiet || git commit -m "brief: $(date -u '+%Y-%m-%d')"
           git push
+
+      - name: Notify on failure
+        if: failure() && steps.timecheck.outputs.should_run == 'true'
+        env:
+          EMAIL_FROM:     ${{ secrets.EMAIL_FROM }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_TO:       khiran@springboardpolicy.com
+        run: |
+          python3 -c "
+import os, smtplib
+from email.mime.text import MIMEText
+sender   = os.environ.get('EMAIL_FROM', '')
+password = os.environ.get('EMAIL_PASSWORD', '')
+to       = os.environ.get('EMAIL_TO', '')
+if not (sender and password and to):
+    print('Email credentials not set — skipping failure notification')
+    exit(0)
+url = 'https://github.com/khiran-oneill/sb-daily-digest/actions'
+msg = MIMEText(f'<p style=\"font-family:sans-serif\">The Springboard daily brief <strong>failed</strong> today.<br><br><a href=\"{url}\">View the GitHub Actions log</a> for details.</p>', 'html')
+msg['Subject'] = 'SB Policy Brief \u2014 run failed'
+msg['From']    = sender
+msg['To']      = to
+with smtplib.SMTP('smtp.gmail.com', 587) as s:
+    s.ehlo(); s.starttls(); s.login(sender, password)
+    s.sendmail(sender, [to], msg.as_string())
+print('Failure notification sent.')
+"

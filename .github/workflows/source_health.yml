@@ -1,0 +1,50 @@
+name: Weekly Source Health Check
+
+on:
+  schedule:
+    # Monday 8:30 AM ET (same DST logic as daily brief)
+    - cron: '30 12 * * 1'   # 8:30 AM EDT (UTC-4, summer)
+    - cron: '30 13 * * 1'   # 8:30 AM EST (UTC-5, winter)
+  workflow_dispatch:
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Toronto time
+        id: timecheck
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          HOUR=$(TZ="America/Toronto" date +%H)
+          if [ "$HOUR" = "08" ]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            echo "Not 8:xx AM ET ($(TZ='America/Toronto' date '+%H:%M %Z')) — skipping."
+          fi
+
+      - name: Check out repository
+        if: steps.timecheck.outputs.should_run == 'true'
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        if: steps.timecheck.outputs.should_run == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        if: steps.timecheck.outputs.should_run == 'true'
+        run: pip install -r requirements.txt
+
+      - name: Run health check and email report
+        if: steps.timecheck.outputs.should_run == 'true'
+        env:
+          EMAIL_FROM:     ${{ secrets.EMAIL_FROM }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_TO:       khiran@springboardpolicy.com
+        run: python source_health.py --email
