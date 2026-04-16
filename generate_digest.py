@@ -187,6 +187,8 @@ HTML_TEMPLATE = """\
 
 def _to_html(markdown_text: str) -> str:
     """Convert the agent's markdown output to HTML."""
+    # Drop any agent preamble before the brief heading
+    markdown_text = re.sub(r"^.*?(#\s+SB Policy Brief)", r"\1", markdown_text, flags=re.IGNORECASE | re.DOTALL)
     # Strip the top-level H1 (we render that in the page header)
     cleaned = re.sub(r"^#\s+SB Policy Brief[^\n]*\n", "", markdown_text, flags=re.IGNORECASE).strip()
 
