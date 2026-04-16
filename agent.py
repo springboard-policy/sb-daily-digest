@@ -34,12 +34,17 @@ MODEL = "claude-sonnet-4-6"
 SYSTEM_PROMPT = """\
 You are a Canadian policy intelligence agent for Springboard, a public policy \
 consulting firm. Your job is to scan policy news sources and produce a concise \
-briefing note suitable for a professional policy audience.
+analytical briefing suitable for a professional policy audience.
 
 You will be given a list of sources to search. Search them ONE AT A TIME \
 sequentially using the search_source tool. For the most important articles \
 (typically 3–6 per topic area), use fetch_article to read the full content \
-before writing your takeaways.
+before writing your items.
+
+You will also receive recent past briefs as context. Use them to identify \
+continuing stories and trends — if today's news connects to or develops \
+something from the past few weeks, say so explicitly in the analysis line. \
+Do NOT repeat content from past briefs; focus only on what is new today.
 
 Begin your response DIRECTLY with the line "# SB Policy Brief — [Full Date]". \
 Do not include any preamble, commentary, or self-narration before the brief.
@@ -50,51 +55,36 @@ Output Format — produce EXACTLY this structure in Markdown:
 
 ---
 
-## Northern & Arctic Infrastructure
+## Skills Policy & Workforce Development
 
-**Top Takeaways**
+1. **[Headline]** — [One sentence: what happened, with an inline link]
+   *[One sentence: why it matters, what it signals, or how it develops a recent trend]*
 
-1. **[Headline takeaway]** — [1–2 sentences: what happened and why it matters]
+2. **[Headline]** — ...
+   *...*
 
-2. **[Headline takeaway]** — [1–2 sentences]
-
-(3–5 takeaways max. Only include if there is genuinely relevant news today. \
-If nothing significant, write: *No significant developments today.* \
-Do NOT list which sources had no content.)
-
-**What to Watch**
-
-- [1–3 bullets on emerging threads worth monitoring]
+(4–5 items. Only include genuinely relevant developments. \
+If nothing significant: *No significant developments today.*)
 
 ---
 
-## Skills Policy & Workforce Development
+## Northern & Arctic Infrastructure
 
-**Top Takeaways**
+1. **[Headline]** — [One sentence: what happened, with an inline link]
+   *[One sentence: significance or connection to recent context]*
 
-1. **[Headline takeaway]** — [1–2 sentences]
-
-(3–5 max. If nothing significant, write: *No significant developments today.* \
-Do NOT list which sources had no content.)
-
-**What to Watch**
-
-- [1–3 bullets]
+(4–5 items. Lead with Yukon, NWT, Nunavut, or circumpolar/Arctic items. \
+Northern-relevant provincial content is welcome but must not lead this section. \
+If nothing significant: *No significant developments today.*)
 
 ---
 
 ## Social Assistance & Income Security
 
-**Top Takeaways**
+1. **[Headline]** — [One sentence: what happened, with an inline link]
+   *[One sentence: significance or connection to recent context]*
 
-1. **[Headline takeaway]** — [1–2 sentences]
-
-(3–5 max. If nothing significant, write: *No significant developments today.* \
-Do NOT list which sources had no content.)
-
-**What to Watch**
-
-- [1–3 bullets]
+(4–5 items. If nothing significant: *No significant developments today.*)
 
 ---
 
@@ -122,19 +112,18 @@ Inuit Tapiriit Kanatami (ITK), Century Initiative, 369 Global.
 - [Article title — Outlet — Author if known](url) [PAYWALLED] if behind a paywall
 
 Guidelines:
-- Be selective. 3–5 takeaways per section maximum.
-- Keep each takeaway to 1–2 sentences. Be direct — cut throat-clearing and \
-  context that a policy professional already knows.
-- Prioritize Canadian federal and provincial policy context.
-- If multiple sources cover the same story, merge them into one takeaway.
-- For committee submission deadlines, one line only: committee name + date.
-- Flag paywalled sources with [PAYWALLED] in the sources list.
-- Only include sources where you actually found relevant content.
-- Links: include inline hyperlinks within takeaway text whenever you are \
-  citing a specific article, document, or announcement. Link the most \
-  relevant phrase (e.g. the bill name, headline, or org name), not the whole \
-  sentence. If a takeaway synthesizes multiple articles, link the primary \
-  source inline and list the rest in Sources Consulted.
+- Each item is exactly two lines: a news line and an analysis line.
+- News line: one sentence stating what happened, with an inline link.
+- Analysis line (italicised): one sentence on significance, policy implication, \
+  or connection to a recent trend from the past briefs provided. This line \
+  should add something the news line does not — do not just restate the news.
+- 4–5 items per section; include 5 only if all are genuinely important.
+- Be direct. Cut throat-clearing and context a policy professional already knows.
+- If multiple sources cover the same story, merge into one item.
+- Committee submission deadlines: news line only (committee + deadline date), \
+  analysis line explains why it is relevant to Springboard's clients or topics.
+- Flag paywalled sources with [PAYWALLED] in the Sources Consulted list.
+- Only list sources where you found relevant content.
 """
 
 # ── Source list organized by topic ───────────────────────────────────────────
@@ -143,6 +132,18 @@ Guidelines:
 # The agent searches them in this order.
 
 SOURCES_BY_TOPIC = {
+    "Skills Policy & Workforce Development": [
+        "esdc",
+        "future_skills_centre",
+        "lmic",
+        "conference_board",
+        "brookfield",
+        "colleges_institutes",
+        "oecd_skills",
+        "ilo",
+        "statcan",
+        "cpp_journal",
+    ],
     "Northern & Arctic Infrastructure": [
         "national_defence",
         "transport_canada",
@@ -169,21 +170,6 @@ SOURCES_BY_TOPIC = {
         "arctic_journal",
         "atlantic_council",
     ],
-    "Skills Policy & Workforce Development": [
-        "esdc",
-        "future_skills_centre",
-        "lmic",
-        "conference_board",
-        "brookfield",
-        "colleges_institutes",
-        "oecd_skills",
-        "ilo",
-        "statcan",
-        "cpp_journal",
-        "ontario_newsroom",
-        "bc_newsroom",
-        "alberta_govt",
-    ],
     "Social Assistance & Income Security": [
         "canada_gazette",
         "maytree",
@@ -198,11 +184,9 @@ SOURCES_BY_TOPIC = {
         "cap",
         "pbo",
         "auditor_general",
-        "ontario_newsroom",
-        "bc_newsroom",
-        "alberta_govt",
     ],
     "General (all topics)": [
+        # National news
         "canada_ca_news",
         "cbc_news",
         "canadian_press",
@@ -217,6 +201,17 @@ SOURCES_BY_TOPIC = {
         "afn",
         "hoc",
         "senate",
+        # Provincial / territorial newsrooms (keyword-filtered)
+        "ontario_newsroom",
+        "quebec_govt",
+        "bc_newsroom",
+        "alberta_govt",
+        "manitoba_govt",
+        "saskatchewan_govt",
+        "nova_scotia_govt",
+        "new_brunswick_govt",
+        "pei_govt",
+        "newfoundland_govt",
     ],
 }
 
@@ -295,6 +290,30 @@ def _run_tool(name: str, inputs: dict) -> str:
         return fetch_article(url)
     else:
         return f"Unknown tool: {name}"
+
+
+# ── Recent context ───────────────────────────────────────────────────────────
+
+def _load_recent_briefs(n: int = 5) -> list[tuple[str, str]]:
+    """
+    Return the last n completed briefs as (human_date, content) pairs,
+    in chronological order, excluding today.
+    """
+    today = date.today().isoformat()
+    paths = sorted(
+        [p for p in Path(".").glob("brief_*.md")
+         if p.stem.replace("brief_", "") < today],
+        reverse=True,
+    )[:n]
+    result = []
+    for p in reversed(paths):
+        date_str = p.stem.replace("brief_", "")
+        try:
+            label = date.fromisoformat(date_str).strftime("%A, %B %d, %Y")
+        except ValueError:
+            label = date_str
+        result.append((label, p.read_text(encoding="utf-8")))
+    return result
 
 
 # ── Public accessors ─────────────────────────────────────────────────────────
@@ -395,7 +414,25 @@ def run_briefing(fixtures_path: str | None = None) -> str:
             source_lines.append(f"  - {sid}")
     sources_text = "\n".join(source_lines)
 
+    # Load recent briefs for trend/context awareness
+    recent = _load_recent_briefs(n=5) if _fixtures is None else []
+    if recent:
+        context_parts = [
+            f"=== {label} ===\n{content.strip()}"
+            for label, content in recent
+        ]
+        context_block = (
+            "Recent briefs for context — use these to identify continuing "
+            "stories and developing trends. Do NOT repeat their content; "
+            "focus only on what is new today.\n\n"
+            + "\n\n".join(context_parts)
+            + "\n\n---\n\n"
+        )
+    else:
+        context_block = ""
+
     user_message = (
+        f"{context_block}"
         f"Today is {today_str}.\n\n"
         f"Please produce the daily Springboard policy brief.\n\n"
         f"Search the following sources one at a time using search_source, "
