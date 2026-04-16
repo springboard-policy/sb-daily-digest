@@ -2,11 +2,11 @@ name: Springboard Daily Policy Brief
 
 on:
   schedule:
-    # Fire at both possible 8:30 AM ET times every weekday.
-    # The "Check Toronto time" step below skips whichever one is wrong,
-    # so DST transitions are handled exactly without month approximations.
-    - cron: '30 12 * * 1-5'   # 8:30 AM EDT (UTC-4, summer)
-    - cron: '30 13 * * 1-5'   # 8:30 AM EST (UTC-5, winter)
+    # Two cron entries cover 8:30 AM ET regardless of DST.
+    # Double-run prevention is handled in Python by _already_ran_today(),
+    # which skips the agent if today's brief already exists.
+    - cron: '30 12 * * 1-5'   # 12:30 UTC = 8:30 AM EDT (summer)
+    - cron: '30 13 * * 1-5'   # 13:30 UTC = 8:30 AM EST (winter)
   workflow_dispatch:           # manual trigger from GitHub Actions tab
 
 jobs:
@@ -14,45 +14,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check Toronto time
-        id: timecheck
-        run: |
-          # Always proceed on manual triggers.
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "should_run=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          # For scheduled runs, only proceed if it's actually 8:xx AM ET.
-          HOUR=$(TZ="America/Toronto" date +%H)
-          if [ "$HOUR" = "08" ]; then
-            echo "should_run=true" >> $GITHUB_OUTPUT
-          else
-            echo "should_run=false" >> $GITHUB_OUTPUT
-            echo "Current Toronto time: $(TZ='America/Toronto' date '+%H:%M %Z') — skipping duplicate trigger."
-          fi
-
       - name: Check out repository
-        if: steps.timecheck.outputs.should_run == 'true'
         uses: actions/checkout@v4
 
       - name: Set up Python
-        if: steps.timecheck.outputs.should_run == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
       - name: Install dependencies
-        if: steps.timecheck.outputs.should_run == 'true'
         run: pip install -r requirements.txt
 
       - name: Generate brief
-        if: steps.timecheck.outputs.should_run == 'true'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python generate_digest.py
 
       - name: Commit and push output
-        if: steps.timecheck.outputs.should_run == 'true'
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
