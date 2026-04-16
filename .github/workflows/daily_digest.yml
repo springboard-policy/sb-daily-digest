@@ -2,11 +2,8 @@ name: Springboard Daily Policy Brief
 
 on:
   schedule:
-    # Two cron entries cover 8:30 AM ET regardless of DST.
-    # Double-run prevention is handled in Python by _already_ran_today(),
-    # which skips the agent if today's brief already exists.
-    - cron: '30 12 * * 1-5'   # 12:30 UTC = 8:30 AM EDT (summer)
-    - cron: '30 13 * * 1-5'   # 13:30 UTC = 8:30 AM EST (winter)
+    # 13:30 UTC = 8:30 AM EST (winter) / 9:30 AM EDT (summer)
+    - cron: '30 13 * * 1-5'
   workflow_dispatch:           # manual trigger from GitHub Actions tab
 
 jobs:
