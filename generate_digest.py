@@ -136,6 +136,7 @@ HTML_TEMPLATE = """\
     }}
     .brief ol > li p {{
       margin: 0 0 0.3rem;
+      font-size: 0.9rem;
     }}
     .brief ol > li p:last-child {{ margin-bottom: 0; }}
     .brief ol > li em {{
