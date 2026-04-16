@@ -318,6 +318,16 @@ def _load_recent_briefs(n: int = 5) -> list[tuple[str, str]]:
 
 # ── Public accessors ─────────────────────────────────────────────────────────
 
+def _calc_cost() -> float:
+    """Compute USD cost for the current run, accounting for cache-read discount."""
+    return (
+        _usage["input_tokens"]        / 1_000_000 * _COST_PER_M_INPUT
+        + _usage["output_tokens"]     / 1_000_000 * _COST_PER_M_OUTPUT
+        + _usage["cache_read_tokens"] / 1_000_000 * (_COST_PER_M_INPUT * 0.1)
+        # cache_create tokens are billed at 1.25× input; already counted in input_tokens
+    )
+
+
 def get_last_run_cost() -> str:
     """
     Return a short cost string for the most recent run_briefing() call,
@@ -327,10 +337,7 @@ def get_last_run_cost() -> str:
     total = _usage["input_tokens"] + _usage["output_tokens"]
     if total == 0:
         return ""
-    cost = (
-        _usage["input_tokens"]  / 1_000_000 * _COST_PER_M_INPUT +
-        _usage["output_tokens"] / 1_000_000 * _COST_PER_M_OUTPUT
-    )
+    cost = _calc_cost()
     return f"{total:,} tokens &middot; ~${cost:.2f}"
 
 
@@ -347,10 +354,7 @@ def _log_run(date_str: str, iterations: int) -> None:
                 json.dump(payload, f, indent=2)
 
     # Calculate and log cost
-    cost = (
-        _usage["input_tokens"]  / 1_000_000 * _COST_PER_M_INPUT +
-        _usage["output_tokens"] / 1_000_000 * _COST_PER_M_OUTPUT
-    )
+    cost = _calc_cost()
     entry = {
         "date":                 date_str,
         "model":                MODEL,
@@ -384,7 +388,8 @@ def run_briefing(fixtures_path: str | None = None) -> str:
     """
     global _stats, _usage, _fixtures, _fixture_capture
     _stats           = {"searched": 0, "with_content": 0}
-    _usage           = {"input_tokens": 0, "output_tokens": 0}
+    _usage           = {"input_tokens": 0, "output_tokens": 0,
+                        "cache_read_tokens": 0, "cache_create_tokens": 0}
     _fixture_capture = {}
 
     if fixtures_path:
@@ -414,8 +419,8 @@ def run_briefing(fixtures_path: str | None = None) -> str:
             source_lines.append(f"  - {sid}")
     sources_text = "\n".join(source_lines)
 
-    # Load recent briefs for trend/context awareness
-    recent = _load_recent_briefs(n=5) if _fixtures is None else []
+    # Load recent briefs for trend/context awareness (up to 30 days)
+    recent = _load_recent_briefs(n=30) if _fixtures is None else []
     if recent:
         context_parts = [
             f"=== {label} ===\n{content.strip()}"
@@ -431,8 +436,7 @@ def run_briefing(fixtures_path: str | None = None) -> str:
     else:
         context_block = ""
 
-    user_message = (
-        f"{context_block}"
+    task_message = (
         f"Today is {today_str}.\n\n"
         f"Please produce the daily Springboard policy brief.\n\n"
         f"Search the following sources one at a time using search_source, "
@@ -441,7 +445,28 @@ def run_briefing(fixtures_path: str | None = None) -> str:
         f"After searching all sources, write the briefing note."
     )
 
-    messages = [{"role": "user", "content": user_message}]
+    # Structure messages so the stable context block and system prompt are
+    # cached — saves ~90% on their tokens for iterations 2–N of the agent loop.
+    messages = [
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": context_block + task_message,
+                    **({"cache_control": {"type": "ephemeral"}} if context_block else {}),
+                }
+            ],
+        }
+    ]
+
+    system_param = [
+        {
+            "type": "text",
+            "text": SYSTEM_PROMPT,
+            "cache_control": {"type": "ephemeral"},
+        }
+    ]
 
     print(f"\nRunning briefing agent ({MODEL}) ...")
     iteration = 0
@@ -455,7 +480,7 @@ def run_briefing(fixtures_path: str | None = None) -> str:
                 response = client.messages.create(
                     model=MODEL,
                     max_tokens=4096,
-                    system=SYSTEM_PROMPT,
+                    system=system_param,
                     tools=TOOLS,
                     messages=messages,
                 )
@@ -467,9 +492,11 @@ def run_briefing(fixtures_path: str | None = None) -> str:
         else:
             return "Error: rate limit retries exhausted."
 
-        # Accumulate token usage
-        _usage["input_tokens"]  += response.usage.input_tokens
-        _usage["output_tokens"] += response.usage.output_tokens
+        # Accumulate token usage (cache_read tokens billed at 10% of input rate)
+        _usage["input_tokens"]        += response.usage.input_tokens
+        _usage["output_tokens"]       += response.usage.output_tokens
+        _usage["cache_read_tokens"]   += getattr(response.usage, "cache_read_input_tokens",  0)
+        _usage["cache_create_tokens"] += getattr(response.usage, "cache_creation_input_tokens", 0)
 
         # Collect any text blocks for potential early-exit inspection
         text_blocks = [b for b in response.content if b.type == "text"]
