@@ -145,13 +145,6 @@ HTML_TEMPLATE = """\
       font-size: 0.85rem;
       line-height: 1.55;
     }}
-    /* Prepend "Analysis:" to the italic analysis line */
-    .brief ol > li p:last-child:not(:first-child) > em:only-child::before {{
-      content: "Analysis: ";
-      font-weight: 600;
-      font-style: normal;
-      color: #1c1c1c;
-    }}
 
     /* ── Bullet lists (Sources Consulted) ── */
     .brief ul {{
@@ -222,6 +215,16 @@ def _to_html(markdown_text: str) -> str:
         cleaned,
         extensions=["extra", "sane_lists"],
     )
+
+    # The analysis line renders as an indented <em> at the end of the same <p>
+    # as the news line. Split it into its own <p> and prepend "Analysis:" label.
+    html_body = re.sub(
+        r'\n[ \t]+(<em>(?:(?!</em>).)*</em>)(</p>)',
+        r'</p>\n<p><strong>Analysis:</strong> \1\2',
+        html_body,
+        flags=re.DOTALL,
+    )
+
     return html_body
 
 
