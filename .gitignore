@@ -3,3 +3,6 @@ __pycache__/
 *.pyc
 .env
 digest_*.html
+fixtures/
+costs.jsonl
+test_*.md

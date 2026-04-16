@@ -11,14 +11,21 @@ a concise briefing note covering three topic areas:
 Requires ANTHROPIC_API_KEY in the environment.
 """
 
+import json
 import os
 import sys
 import time
 from datetime import date
+from pathlib import Path
 
 import anthropic
 
 from tools import search_source, fetch_article
+
+# ── Cost constants ────────────────────────────────────────────────────────────
+# Verify current pricing at https://anthropic.com/pricing
+_COST_PER_M_INPUT  = 3.00   # USD per million input tokens  (claude-sonnet-4-6)
+_COST_PER_M_OUTPUT = 15.00  # USD per million output tokens (claude-sonnet-4-6)
 
 MODEL = "claude-sonnet-4-6"
 
@@ -258,18 +265,29 @@ TOOLS = [
 
 GENERAL_SOURCES = set(SOURCES_BY_TOPIC["General (all topics)"])
 
-_stats: dict = {"searched": 0, "with_content": 0}
+_stats:           dict       = {"searched": 0, "with_content": 0}
+_usage:           dict       = {"input_tokens": 0, "output_tokens": 0}
+_fixtures:        dict|None  = None   # None = live mode; dict = replay mode
+_fixture_capture: dict       = {}     # populated during every run
 
 
 def _run_tool(name: str, inputs: dict) -> str:
     if name == "search_source":
         source_id = inputs.get("source_id", "")
         print(f"    -> search_source({source_id})")
-        keyword_filter = source_id in GENERAL_SOURCES
-        result = search_source(source_id, keyword_filter=keyword_filter)
-        _stats["searched"] += 1
-        if "No recent articles found" not in result:
-            _stats["with_content"] += 1
+
+        if _fixtures is not None:
+            # Replay mode: return saved result, skip live fetch
+            result = _fixtures.get(source_id, f"=== {source_id} ===\nNo data in fixture.\n")
+            print(f"       [fixture]")
+        else:
+            keyword_filter = source_id in GENERAL_SOURCES
+            result = search_source(source_id, keyword_filter=keyword_filter)
+            _stats["searched"] += 1
+            if "No recent articles found" not in result:
+                _stats["with_content"] += 1
+
+        _fixture_capture[source_id] = result
         return result
     elif name == "fetch_article":
         url = inputs.get("url", "")
@@ -279,15 +297,66 @@ def _run_tool(name: str, inputs: dict) -> str:
         return f"Unknown tool: {name}"
 
 
+# ── Logging helpers ───────────────────────────────────────────────────────────
+
+def _log_run(date_str: str, iterations: int) -> None:
+    """Save fixtures and log token/cost data after a completed run."""
+    # Auto-save fixtures (live runs only — skip if replaying)
+    if _fixtures is None and _fixture_capture:
+        Path("fixtures").mkdir(exist_ok=True)
+        payload = {"date": date_str, "sources": _fixture_capture}
+        for path in (f"fixtures/{date_str}.json", "fixtures/latest.json"):
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(payload, f, indent=2)
+
+    # Calculate and log cost
+    cost = (
+        _usage["input_tokens"]  / 1_000_000 * _COST_PER_M_INPUT +
+        _usage["output_tokens"] / 1_000_000 * _COST_PER_M_OUTPUT
+    )
+    entry = {
+        "date":                 date_str,
+        "model":                MODEL,
+        "input_tokens":         _usage["input_tokens"],
+        "output_tokens":        _usage["output_tokens"],
+        "iterations":           iterations,
+        "sources_searched":     _stats["searched"],
+        "sources_with_content": _stats["with_content"],
+        "approx_cost_usd":      round(cost, 4),
+        "test_mode":            _fixtures is not None,
+    }
+    with open("costs.jsonl", "a", encoding="utf-8") as f:
+        f.write(json.dumps(entry) + "\n")
+
+    flag = " [test mode]" if _fixtures is not None else ""
+    print(
+        f"  Tokens: {_usage['input_tokens']:,} in / {_usage['output_tokens']:,} out"
+        f"  (~${cost:.3f}){flag}"
+    )
+
+
 # ── Agent loop ────────────────────────────────────────────────────────────────
 
-def run_briefing() -> str:
+def run_briefing(fixtures_path: str | None = None) -> str:
     """
     Run the full briefing agent. Returns the markdown briefing as a string.
     Raises RuntimeError if ANTHROPIC_API_KEY is not set.
+
+    Pass fixtures_path to replay a saved fixture file instead of fetching
+    live sources (useful for prompt testing without spending on HTTP calls).
     """
-    global _stats
-    _stats = {"searched": 0, "with_content": 0}
+    global _stats, _usage, _fixtures, _fixture_capture
+    _stats           = {"searched": 0, "with_content": 0}
+    _usage           = {"input_tokens": 0, "output_tokens": 0}
+    _fixture_capture = {}
+
+    if fixtures_path:
+        with open(fixtures_path, encoding="utf-8") as f:
+            data = json.load(f)
+        _fixtures = data.get("sources", data)  # support both wrapped and bare formats
+        print(f"  [test mode] Replaying fixtures from {fixtures_path}")
+    else:
+        _fixtures = None
 
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
@@ -296,7 +365,8 @@ def run_briefing() -> str:
             "Add it to your .env file or environment variables."
         )
 
-    client = anthropic.Anthropic(api_key=api_key)
+    client   = anthropic.Anthropic(api_key=api_key)
+    date_str  = date.today().isoformat()
     today_str = date.today().strftime("%A, %B %d, %Y")
 
     # Build the source list for the user message
@@ -342,6 +412,10 @@ def run_briefing() -> str:
         else:
             return "Error: rate limit retries exhausted."
 
+        # Accumulate token usage
+        _usage["input_tokens"]  += response.usage.input_tokens
+        _usage["output_tokens"] += response.usage.output_tokens
+
         # Collect any text blocks for potential early-exit inspection
         text_blocks = [b for b in response.content if b.type == "text"]
         tool_blocks = [b for b in response.content if b.type == "tool_use"]
@@ -350,11 +424,14 @@ def run_briefing() -> str:
             # Agent is done — return the text
             briefing = "\n\n".join(b.text for b in text_blocks).strip()
             print(f"  Agent finished after {iteration} iteration(s).")
+
             # Append source volume stat
             briefing += (
                 f"\n\n---\n*{_stats['with_content']} of {_stats['searched']} "
                 f"sources had new content today.*"
             )
+
+            _log_run(date_str, iteration)
             return briefing
 
         # Handle tool calls
