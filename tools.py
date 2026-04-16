@@ -22,7 +22,7 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (compatible; sb-digest-bot/1.0; for internal research)"
 }
 TIMEOUT = 20
-LOOKBACK_HOURS = 28  # slightly generous to catch early-morning posts
+LOOKBACK_HOURS = 24
 
 
 # ── search_source ─────────────────────────────────────────────────────────────
