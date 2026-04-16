@@ -26,7 +26,6 @@ except ImportError:
 import markdown as md
 
 from agent import run_briefing
-from send_brief import send_brief
 
 # ── HTML wrapper template ─────────────────────────────────────────────────────
 
@@ -249,9 +248,6 @@ def generate() -> str:
     # Save the raw markdown (used as cache to skip re-running the agent)
     with open(f"brief_{date_str}.md", "w", encoding="utf-8") as f:
         f.write(briefing_md)
-
-    # Email the brief
-    send_brief(html, date_long)
 
     return archive_path
 
