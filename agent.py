@@ -278,7 +278,7 @@ TOOLS = [
 
 GENERAL_SOURCES = set(SOURCES_BY_TOPIC["General (all topics)"])
 
-_stats:           dict       = {"searched": 0, "with_content": 0}
+_stats:           dict       = {"searched": 0, "with_content": 0, "errors": 0}
 _usage:           dict       = {"input_tokens": 0, "output_tokens": 0}
 _fixtures:        dict|None  = None   # None = live mode; dict = replay mode
 _fixture_capture: dict       = {}     # populated during every run
@@ -297,7 +297,9 @@ def _run_tool(name: str, inputs: dict) -> str:
             keyword_filter = source_id in GENERAL_SOURCES
             result = search_source(source_id, keyword_filter=keyword_filter)
             _stats["searched"] += 1
-            if "No recent articles found" not in result:
+            if "Fetch error" in result:
+                _stats["errors"] += 1
+            elif "No recent articles found" not in result:
                 _stats["with_content"] += 1
 
         _fixture_capture[source_id] = result
@@ -381,6 +383,7 @@ def _log_run(date_str: str, iterations: int) -> None:
         "iterations":           iterations,
         "sources_searched":     _stats["searched"],
         "sources_with_content": _stats["with_content"],
+        "sources_errors":       _stats["errors"],
         "approx_cost_usd":      round(cost, 4),
         "test_mode":            _fixtures is not None,
     }
@@ -405,7 +408,7 @@ def run_briefing(fixtures_path: str | None = None) -> str:
     live sources (useful for prompt testing without spending on HTTP calls).
     """
     global _stats, _usage, _fixtures, _fixture_capture
-    _stats           = {"searched": 0, "with_content": 0}
+    _stats           = {"searched": 0, "with_content": 0, "errors": 0}
     _usage           = {"input_tokens": 0, "output_tokens": 0,
                         "cache_read_tokens": 0, "cache_create_tokens": 0}
     _fixture_capture = {}
@@ -538,9 +541,10 @@ def run_briefing(fixtures_path: str | None = None) -> str:
             print(f"  Agent finished after {iteration} iteration(s).")
 
             # Append source volume stat
+            error_note = f" · {_stats['errors']} fetch errors" if _stats["errors"] else ""
             briefing += (
                 f"\n\n---\n*{_stats['with_content']} of {_stats['searched']} "
-                f"sources had new content today.*"
+                f"sources had new content today{error_note}.*"
             )
 
             _log_run(date_str, iteration)

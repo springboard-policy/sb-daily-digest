@@ -40,8 +40,8 @@ def _get_source(source_id: str) -> dict | None:
     return None
 
 
-def _fetch_rss(src: dict) -> list[dict]:
-    """Return recent items from an RSS/Atom feed."""
+def _fetch_rss(src: dict) -> list[dict] | None:
+    """Return recent items from an RSS/Atom feed, or None on fetch error."""
     import feedparser
     lookback = _get_lookback_hours()
     cutoff = datetime.now(timezone.utc) - timedelta(hours=lookback)
@@ -53,7 +53,8 @@ def _fetch_rss(src: dict) -> list[dict]:
         resp.raise_for_status()
         feed = feedparser.parse(resp.content)
     except Exception as e:
-        return []
+        print(f"    [error] {src['id']}: {type(e).__name__}: {e}", file=sys.stderr)
+        return None
 
     items = []
     for entry in feed.entries:
@@ -86,8 +87,8 @@ def _fetch_rss(src: dict) -> list[dict]:
     return items
 
 
-def _fetch_page_articles(src: dict) -> list[dict]:
-    """Scrape article links from a news page."""
+def _fetch_page_articles(src: dict) -> list[dict] | None:
+    """Scrape article links from a news page, or None on fetch error."""
     news_url = src.get("news_url", "")
     if not news_url:
         return []
@@ -98,8 +99,9 @@ def _fetch_page_articles(src: dict) -> list[dict]:
             resp = requests.get(news_url, headers=HEADERS, timeout=TIMEOUT, verify=False)
         resp.raise_for_status()
         soup = BeautifulSoup(resp.text, "html.parser")
-    except Exception:
-        return []
+    except Exception as e:
+        print(f"    [error] {src['id']}: {type(e).__name__}: {e}", file=sys.stderr)
+        return None
 
     items = []
     seen = set()
@@ -178,20 +180,31 @@ def search_source(source_id: str, keyword_filter: bool = False) -> str:
         )
 
     items = []
+    fetch_failed = False
     if src.get("scrape_module"):
         items = _fetch_scrape_module(src)
     elif src.get("has_rss") and src.get("rss_url"):
-        items = _fetch_rss(src)
+        result = _fetch_rss(src)
+        if result is None:
+            fetch_failed = True
+        else:
+            items = result
     elif src.get("news_url"):
-        items = _fetch_page_articles(src)
+        result = _fetch_page_articles(src)
+        if result is None:
+            fetch_failed = True
+        else:
+            items = result
 
-    if keyword_filter:
+    if keyword_filter and not fetch_failed:
         items = [i for i in items if _keyword_match(i["title"], i.get("summary", ""))]
 
     lookback = _get_lookback_hours()
     paywall_note = " [PAYWALLED]" if src.get("paywalled") else ""
     header = f"=== {src['name']}{paywall_note} ===\n"
 
+    if fetch_failed:
+        return header + "Fetch error — source could not be retrieved.\n"
     if not items:
         return header + f"No recent articles found in the last {lookback} hours.\n"
 
