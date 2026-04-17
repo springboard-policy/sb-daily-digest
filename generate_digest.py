@@ -47,23 +47,23 @@ HTML_TEMPLATE = """\
       font-family: "Inter", system-ui, -apple-system, sans-serif;
       font-size: 15px;
       line-height: 1.65;
-      background: #f4f3f0;
-      color: #1c1c1c;
+      background: #fff;
+      color: #333;
     }}
 
     /* ── Header ── */
     .page-header {{
-      background: #1a2b3c;
+      background: #29C3EC;
       color: #fff;
       padding: 1.5rem 2.5rem 1.25rem;
-      border-bottom: 3px solid #c8a951;
+      border-bottom: 3px solid #00698C;
     }}
     .page-header .org {{
       font-size: 0.68rem;
       font-weight: 600;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      opacity: 0.5;
+      opacity: 0.75;
       margin-bottom: 0.3rem;
     }}
     .page-header h1 {{
@@ -74,20 +74,20 @@ HTML_TEMPLATE = """\
     .page-header .dateline {{
       font-size: 0.85rem;
       font-weight: 400;
-      opacity: 0.6;
+      opacity: 0.85;
       margin-top: 0.2rem;
     }}
     .page-header .archive-link {{
       font-size: 0.75rem;
-      opacity: 0.45;
+      opacity: 0.7;
       margin-top: 0.4rem;
     }}
     .page-header .archive-link a {{
       color: #fff;
       text-decoration: none;
-      border-bottom: 1px solid rgba(255,255,255,0.25);
+      border-bottom: 1px solid rgba(255,255,255,0.4);
     }}
-    .page-header .archive-link a:hover {{ opacity: 1; border-bottom-color: #c8a951; }}
+    .page-header .archive-link a:hover {{ opacity: 1; border-bottom-color: #fff; }}
 
     /* ── Layout ── */
     .content {{
@@ -102,10 +102,10 @@ HTML_TEMPLATE = """\
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      color: #1a2b3c;
+      color: #000;
       margin: 3rem 0 0;
       padding-bottom: 0.5rem;
-      border-bottom: 2px solid #c8a951;
+      border-bottom: 2px solid #29C3EC;
     }}
 
     .brief hr {{ display: none; }}
@@ -121,7 +121,7 @@ HTML_TEMPLATE = """\
       counter-increment: brief-item;
       position: relative;
       padding: 1rem 0 1rem 2.25rem;
-      border-bottom: 1px solid #e5e3de;
+      border-bottom: 1px solid #F2F2F2;
     }}
     .brief ol > li::before {{
       content: counter(brief-item);
@@ -130,7 +130,7 @@ HTML_TEMPLATE = """\
       top: 1.1rem;
       font-size: 0.7rem;
       font-weight: 700;
-      color: #c8a951;
+      color: #29C3EC;
       width: 1.5rem;
       text-align: right;
     }}
@@ -141,7 +141,7 @@ HTML_TEMPLATE = """\
     .brief ol > li p:last-child {{ margin-bottom: 0; }}
     .brief ol > li em {{
       font-style: italic;
-      color: #555;
+      color: #5F8699;
       font-size: 0.85rem;
       line-height: 1.55;
     }}
@@ -154,22 +154,22 @@ HTML_TEMPLATE = """\
     .brief ul li {{
       margin-bottom: 0.35rem;
       font-size: 0.875rem;
-      color: #555;
+      color: #5F8699;
     }}
 
     /* ── Inline ── */
-    .brief a {{ color: #1a5c9e; text-decoration: none; }}
-    .brief a:hover {{ text-decoration: underline; }}
+    .brief a {{ color: #00698C; text-decoration: none; }}
+    .brief a:hover {{ text-decoration: underline; color: #4295AD; }}
     .brief p {{ margin-bottom: 0.5rem; }}
-    .brief em {{ color: #777; }}
+    .brief em {{ color: #5F8699; }}
 
     /* ── Footer ── */
     .page-footer {{
       text-align: center;
       font-size: 0.75rem;
-      color: #b0b0b0;
+      color: #5F8699;
       padding: 1.5rem;
-      border-top: 1px solid #e0ded9;
+      border-top: 1px solid #F2F2F2;
     }}
 
     @media (max-width: 600px) {{
@@ -323,22 +323,23 @@ def _build_archive() -> None:
       font-family: "Inter", system-ui, -apple-system, sans-serif;
       font-size: 15px;
       line-height: 1.65;
-      background: #f4f3f0;
-      color: #1c1c1c;
+      background: #fff;
+      color: #333;
     }}
-    .page-header {{ background: #1a2b3c; color: #fff; padding: 1.5rem 2.5rem 1.25rem; border-bottom: 3px solid #c8a951; }}
-    .page-header .org {{ font-size: 0.68rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.5; margin-bottom: 0.3rem; }}
+    .page-header {{ background: #29C3EC; color: #fff; padding: 1.5rem 2.5rem 1.25rem; border-bottom: 3px solid #00698C; }}
+    .page-header .org {{ font-size: 0.68rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.75; margin-bottom: 0.3rem; }}
     .page-header h1 {{ font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; }}
-    .page-header .sub {{ font-size: 0.85rem; opacity: 0.6; margin-top: 0.2rem; }}
+    .page-header .sub {{ font-size: 0.85rem; opacity: 0.85; margin-top: 0.2rem; }}
     .page-header .sub a {{ color: #fff; text-decoration: none; }}
+    .page-header .sub a:hover {{ text-decoration: underline; }}
     .content {{ max-width: 560px; margin: 2.5rem auto; padding: 0 1.5rem 4rem; }}
     h2 {{ font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
-          color: #1a2b3c; border-bottom: 2px solid #c8a951; padding-bottom: 0.5rem; margin-bottom: 1.25rem; }}
+          color: #000; border-bottom: 2px solid #29C3EC; padding-bottom: 0.5rem; margin-bottom: 1.25rem; }}
     ul {{ list-style: none; padding: 0; }}
-    li {{ padding: 0.65rem 0; border-bottom: 1px solid #e5e3de; font-size: 0.95rem; }}
-    a {{ color: #1a5c9e; text-decoration: none; }}
-    a:hover {{ text-decoration: underline; }}
-    .page-footer {{ text-align: center; font-size: 0.75rem; color: #b0b0b0; padding: 1.5rem; border-top: 1px solid #e0ded9; }}
+    li {{ padding: 0.65rem 0; border-bottom: 1px solid #F2F2F2; font-size: 0.95rem; }}
+    a {{ color: #00698C; text-decoration: none; }}
+    a:hover {{ text-decoration: underline; color: #4295AD; }}
+    .page-footer {{ text-align: center; font-size: 0.75rem; color: #5F8699; padding: 1.5rem; border-top: 1px solid #F2F2F2; }}
   </style>
 </head>
 <body>
