@@ -25,8 +25,61 @@ except ImportError:
     pass
 
 import markdown as md
+import requests
+from bs4 import BeautifulSoup
 
 from agent import run_briefing, get_last_run_cost
+
+# ── URL validation ────────────────────────────────────────────────────────────
+
+_STOP_WORDS = {
+    'a', 'an', 'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
+    'of', 'with', 'by', 'from', 'is', 'was', 'are', 'were', 'be', 'been',
+    'has', 'have', 'had', 'it', 'its', 'this', 'that', 'as', 'up', 'not',
+    'can', 'will', 'than', 'says', 'say', 'new', 'after',
+}
+_HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; sb-digest-bot/1.0)"}
+
+# URLs where a content-title match can't be expected (e.g. submission portals)
+_SKIP_DOMAINS = {"ourcommons.ca", "sencanada.ca", "parl.gc.ca", "news.google.com"}
+
+
+def _meaningful_words(text: str) -> set[str]:
+    words = re.findall(r"[a-z']+", text.lower())
+    return {w.strip("'") for w in words if w not in _STOP_WORDS and len(w) > 2}
+
+
+def _validate_links(briefing_md: str) -> str:
+    """
+    For every [text](url) link in the brief, fetch the page and check that
+    the page title shares at least one meaningful word with the link text.
+    If not, remove the hyperlink (keep plain text) and print a warning.
+    """
+    pattern = re.compile(r'\[([^\]]+)\]\((https?://[^)]+)\)')
+
+    def check(match: re.Match) -> str:
+        link_text, url = match.group(1), match.group(2)
+        domain = re.search(r'https?://([^/]+)', url)
+        if domain and any(s in domain.group(1) for s in _SKIP_DOMAINS):
+            return match.group(0)
+        try:
+            resp = requests.get(url, headers=_HEADERS, timeout=15, verify=True,
+                                allow_redirects=True)
+            soup = BeautifulSoup(resp.text, "html.parser")
+            page_title = soup.title.string if soup.title else ""
+            link_words  = _meaningful_words(link_text)
+            title_words = _meaningful_words(page_title)
+            if link_words and title_words and not link_words & title_words:
+                print(f"  [url-check] Mismatch removed: '{link_text[:60]}'\n"
+                      f"              URL pointed to: '{page_title[:80]}'",
+                      file=sys.stderr)
+                return link_text  # strip the bad link, keep plain text
+        except Exception:
+            pass  # network failure — leave link as-is
+        return match.group(0)
+
+    print("  Validating brief links ...")
+    return pattern.sub(check, briefing_md)
 
 # ── HTML wrapper template ─────────────────────────────────────────────────────
 
@@ -329,6 +382,7 @@ def generate(force: bool = False) -> str:
         except RuntimeError as e:
             print(f"\nERROR: {e}", file=sys.stderr)
             sys.exit(1)
+        briefing_md = _validate_links(briefing_md)
 
     body_html = _to_html(briefing_md)
 
