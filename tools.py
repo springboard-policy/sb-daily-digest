@@ -40,21 +40,36 @@ def _get_source(source_id: str) -> dict | None:
     return None
 
 
-def _fetch_rss(src: dict) -> list[dict] | None:
-    """Return recent items from an RSS/Atom feed, or None on fetch error."""
+def _fetch_rss_url(url: str) -> "feedparser.FeedParserDict":
+    """Fetch and parse an RSS URL, with SSL fallback."""
     import feedparser
+    try:
+        resp = requests.get(url, headers=HEADERS, timeout=TIMEOUT, verify=True)
+    except requests.exceptions.SSLError:
+        resp = requests.get(url, headers=HEADERS, timeout=TIMEOUT, verify=False)
+    resp.raise_for_status()
+    return feedparser.parse(resp.content)
+
+
+def _fetch_rss(src: dict) -> list[dict] | None:
+    """Return recent items from an RSS/Atom feed, or None on fetch error.
+    Falls back to google_news_rss_url if the primary feed fails."""
     lookback = _get_lookback_hours()
     cutoff = datetime.now(timezone.utc) - timedelta(hours=lookback)
     try:
-        try:
-            resp = requests.get(src["rss_url"], headers=HEADERS, timeout=TIMEOUT, verify=True)
-        except requests.exceptions.SSLError:
-            resp = requests.get(src["rss_url"], headers=HEADERS, timeout=TIMEOUT, verify=False)
-        resp.raise_for_status()
-        feed = feedparser.parse(resp.content)
+        feed = _fetch_rss_url(src["rss_url"])
     except Exception as e:
-        print(f"    [error] {src['id']}: {type(e).__name__}: {e}", file=sys.stderr)
-        return None
+        fallback = src.get("google_news_rss_url")
+        if fallback:
+            print(f"    [warn] {src['id']} primary RSS failed ({type(e).__name__}), trying Google News fallback")
+            try:
+                feed = _fetch_rss_url(fallback)
+            except Exception as e2:
+                print(f"    [error] {src['id']} fallback also failed: {type(e2).__name__}: {e2}", file=sys.stderr)
+                return None
+        else:
+            print(f"    [error] {src['id']}: {type(e).__name__}: {e}", file=sys.stderr)
+            return None
 
     items = []
     for entry in feed.entries:

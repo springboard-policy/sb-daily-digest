@@ -276,7 +276,8 @@ TOOLS = [
 
 # ── Tool dispatcher ───────────────────────────────────────────────────────────
 
-GENERAL_SOURCES = set(SOURCES_BY_TOPIC["General (all topics)"])
+GENERAL_SOURCES  = set(SOURCES_BY_TOPIC["General (all topics)"])
+ALL_SOURCE_IDS   = [sid for ids in SOURCES_BY_TOPIC.values() for sid in ids]
 
 _stats:           dict       = {"searched": 0, "with_content": 0, "errors": 0}
 _usage:           dict       = {"input_tokens": 0, "output_tokens": 0}
@@ -536,7 +537,21 @@ def run_briefing(fixtures_path: str | None = None) -> str:
         tool_blocks = [b for b in response.content if b.type == "tool_use"]
 
         if response.stop_reason == "end_turn" or not tool_blocks:
-            # Agent is done — return the text
+            # Before accepting the brief, check all sources were searched
+            if _fixtures is None:
+                unsearched = [sid for sid in ALL_SOURCE_IDS if sid not in _fixture_capture]
+                if unsearched:
+                    print(f"  Coverage check: {len(unsearched)} source(s) not yet searched — continuing.")
+                    nudge = (
+                        "Before finishing, you still need to search these sources:\n"
+                        + "\n".join(f"  - {sid}" for sid in unsearched)
+                        + "\n\nPlease search them now, then produce the final brief."
+                    )
+                    messages.append({"role": "assistant", "content": response.content})
+                    messages.append({"role": "user", "content": [{"type": "text", "text": nudge}]})
+                    continue
+
+            # All sources searched — finalise
             briefing = "\n\n".join(b.text for b in text_blocks).strip()
             print(f"  Agent finished after {iteration} iteration(s).")
 

@@ -187,6 +187,7 @@ SOURCES = [
         "name": "CBC News",
         "source_type": "National news",
         "rss_url": "https://rss.cbc.ca/lineup/topstories.xml",
+        "google_news_rss_url": "https://news.google.com/rss/search?q=site:cbc.ca&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": True,
     },
     {
@@ -194,6 +195,7 @@ SOURCES = [
         "name": "CBC North",
         "source_type": "Regional news",
         "rss_url": "https://rss.cbc.ca/lineup/canada-north.xml",
+        "google_news_rss_url": "https://news.google.com/rss/search?q=site:cbc.ca+north+nunavut+OR+%22northwest+territories%22+OR+yukon&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": True,
     },
     {
@@ -201,6 +203,7 @@ SOURCES = [
         "name": "Toronto Star",
         "source_type": "National news",
         "rss_url": "https://www.thestar.com/content/thestar/feed.rss",
+        "google_news_rss_url": "https://news.google.com/rss/search?q=site:thestar.com&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": True,
     },
     {
@@ -216,6 +219,7 @@ SOURCES = [
         "name": "National Post",
         "source_type": "National news",
         "rss_url": "https://nationalpost.com/feed/",
+        "google_news_rss_url": "https://news.google.com/rss/search?q=site:nationalpost.com&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": True,
     },
     {
@@ -239,6 +243,7 @@ SOURCES = [
         "name": "Maclean's",
         "source_type": "National news",
         "rss_url": "https://macleans.ca/feed/",
+        "google_news_rss_url": "https://news.google.com/rss/search?q=site:macleans.ca&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": True,
     },
     {
@@ -246,6 +251,7 @@ SOURCES = [
         "name": "The Canadian Press",
         "source_type": "National news",
         "rss_url": "https://www.thecanadianpress.com/feed/",
+        "google_news_rss_url": "https://news.google.com/rss/search?q=site:thecanadianpress.com&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": True,
     },
     {
@@ -260,6 +266,7 @@ SOURCES = [
         "name": "Montreal Gazette",
         "source_type": "National news",
         "rss_url": "https://montrealgazette.com/feed",
+        "google_news_rss_url": "https://news.google.com/rss/search?q=site:montrealgazette.com&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": True,
     },
     {
