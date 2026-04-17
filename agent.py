@@ -120,7 +120,9 @@ Guidelines:
 - Each item is exactly two lines: a news line and an analysis line.
 - News line: the headline itself is the hyperlink (bold linked text), followed \
   by a dash and one sentence stating what happened. Do not add a second link \
-  in the sentence (e.g. no "read the report" or "see here" links).
+  in the sentence (e.g. no "read the report" or "see here" links). \
+  IMPORTANT: use only the exact URL returned by search_source for that article. \
+  Never guess, construct, or reuse a URL from a different article or source.
 - Analysis line (italicised): one sentence on significance, policy implication, \
   or broader context — draw on your knowledge of Canadian policy, relevant \
   research, historical precedents, institutional dynamics, or recent trends \
