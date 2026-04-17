@@ -41,14 +41,23 @@ def _get_source(source_id: str) -> dict | None:
 
 
 def _fetch_rss_url(url: str) -> "feedparser.FeedParserDict":
-    """Fetch and parse an RSS URL, with SSL fallback."""
-    import feedparser
-    try:
-        resp = requests.get(url, headers=HEADERS, timeout=TIMEOUT, verify=True)
-    except requests.exceptions.SSLError:
-        resp = requests.get(url, headers=HEADERS, timeout=TIMEOUT, verify=False)
-    resp.raise_for_status()
-    return feedparser.parse(resp.content)
+    """Fetch and parse an RSS URL, with SSL fallback and one retry on transient errors."""
+    import feedparser, time
+    for attempt in range(2):
+        try:
+            try:
+                resp = requests.get(url, headers=HEADERS, timeout=TIMEOUT, verify=True)
+            except requests.exceptions.SSLError:
+                resp = requests.get(url, headers=HEADERS, timeout=TIMEOUT, verify=False)
+            resp.raise_for_status()
+            return feedparser.parse(resp.content)
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
+            if attempt == 0:
+                time.sleep(3)
+                continue
+            raise
+        except Exception:
+            raise
 
 
 def _fetch_rss(src: dict) -> list[dict] | None:

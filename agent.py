@@ -191,13 +191,10 @@ SOURCES_BY_TOPIC = {
         "atlantic_council",
     ],
     "Social Assistance & Income Security": [
-        "canada_gazette",
         "maytree",
         "campaign2000",
         "wellesley",
         "basic_income_canada",
-        "cd_howe",
-        "ccpa",
         "oecd_social",
         "metis_national",
         "nwac",
@@ -219,6 +216,9 @@ SOURCES_BY_TOPIC = {
         "macleans",
         "the_tyee",
         "the_narwhal",
+        "canada_gazette",
+        "ccpa",
+        "cd_howe",
         "afn",
         "hoc",
         "senate",
@@ -284,7 +284,7 @@ TOOLS = [
 GENERAL_SOURCES  = set(SOURCES_BY_TOPIC["General (all topics)"])
 ALL_SOURCE_IDS   = [sid for ids in SOURCES_BY_TOPIC.values() for sid in ids]
 
-_stats:           dict       = {"searched": 0, "with_content": 0, "errors": 0}
+_stats:           dict       = {"searched": 0, "with_content": 0, "errors": 0, "error_sources": []}
 _usage:           dict       = {"input_tokens": 0, "output_tokens": 0}
 _fixtures:        dict|None  = None   # None = live mode; dict = replay mode
 _fixture_capture: dict       = {}     # populated during every run
@@ -305,6 +305,7 @@ def _run_tool(name: str, inputs: dict) -> str:
             _stats["searched"] += 1
             if "Fetch error" in result:
                 _stats["errors"] += 1
+                _stats["error_sources"].append(source_id)
             elif "No recent articles found" not in result:
                 _stats["with_content"] += 1
 
@@ -414,7 +415,7 @@ def run_briefing(fixtures_path: str | None = None) -> str:
     live sources (useful for prompt testing without spending on HTTP calls).
     """
     global _stats, _usage, _fixtures, _fixture_capture
-    _stats           = {"searched": 0, "with_content": 0, "errors": 0}
+    _stats           = {"searched": 0, "with_content": 0, "errors": 0, "error_sources": []}
     _usage           = {"input_tokens": 0, "output_tokens": 0,
                         "cache_read_tokens": 0, "cache_create_tokens": 0}
     _fixture_capture = {}
@@ -561,7 +562,11 @@ def run_briefing(fixtures_path: str | None = None) -> str:
             print(f"  Agent finished after {iteration} iteration(s).")
 
             # Append source volume stat
-            error_note = f" · {_stats['errors']} fetch errors" if _stats["errors"] else ""
+            if _stats["errors"]:
+                error_list = ", ".join(_stats["error_sources"])
+                error_note = f" · {_stats['errors']} fetch errors ({error_list})"
+            else:
+                error_note = ""
             briefing += (
                 f"\n\n---\n*{_stats['with_content']} of {_stats['searched']} "
                 f"sources had new content today{error_note}.*"
