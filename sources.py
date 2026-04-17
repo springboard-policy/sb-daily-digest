@@ -87,6 +87,7 @@ SOURCES = [
         "name": "Parliamentary Budget Officer",
         "source_type": "Federal government",
         "rss_url": "https://www.pbo-dpb.ca/api/publications?format=atom",
+        "google_news_rss_url": "https://news.google.com/rss/search?q=site:pbo-dpb.ca&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": True,
     },
     {
@@ -94,6 +95,7 @@ SOURCES = [
         "name": "Statistics Canada — The Daily",
         "source_type": "Federal government",
         "rss_url": "https://www150.statcan.gc.ca/n1/rss/daily-quotidien-eng.xml",
+        "google_news_rss_url": "https://news.google.com/rss/search?q=site:www150.statcan.gc.ca&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": True,
     },
     # ── P/T government (RSS) ──────────────────────────────────────────────────
@@ -102,6 +104,7 @@ SOURCES = [
         "name": "Yukon Government",
         "source_type": "P/T government",
         "rss_url": "https://yukon.ca/en/rss.xml",
+        "google_news_rss_url": "https://news.google.com/rss/search?q=site:yukon.ca&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": True,
     },
     {
@@ -130,6 +133,7 @@ SOURCES = [
         "name": "Alberta Government News",
         "source_type": "P/T government",
         "rss_url": "https://www.alberta.ca/news/rss",
+        "google_news_rss_url": "https://news.google.com/rss/search?q=site:alberta.ca+news&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": True,
     },
     {
@@ -137,6 +141,7 @@ SOURCES = [
         "name": "Quebec Government News",
         "source_type": "P/T government",
         "rss_url": "https://www.newswire.ca/rss/public-affairs/quebec-government.rss",
+        "google_news_rss_url": "https://news.google.com/rss/search?q=Quebec+government+news&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": True,
     },
     {
@@ -151,6 +156,7 @@ SOURCES = [
         "name": "Saskatchewan Government News",
         "source_type": "P/T government",
         "rss_url": "https://www.saskatchewan.ca/government/news-and-media/rss",
+        "google_news_rss_url": "https://news.google.com/rss/search?q=site:saskatchewan.ca+news&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": True,
     },
     {
@@ -165,6 +171,7 @@ SOURCES = [
         "name": "New Brunswick Government News",
         "source_type": "P/T government",
         "rss_url": "https://www2.gnb.ca/content/gnb/en/news/rss.html",
+        "google_news_rss_url": "https://news.google.com/rss/search?q=site:gnb.ca+news&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": True,
     },
     {
@@ -179,6 +186,7 @@ SOURCES = [
         "name": "Newfoundland & Labrador Government News",
         "source_type": "P/T government",
         "rss_url": "https://www.releases.gov.nl.ca/releases/rss/index.asp",
+        "google_news_rss_url": "https://news.google.com/rss/search?q=site:gov.nl.ca+news&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": True,
     },
     # ── National news (RSS) ───────────────────────────────────────────────────
@@ -227,6 +235,7 @@ SOURCES = [
         "name": "iPolitics",
         "source_type": "National news",
         "rss_url": "https://ipolitics.ca/feed/",
+        "google_news_rss_url": "https://news.google.com/rss/search?q=site:ipolitics.ca&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": True,
         "paywalled": True,
     },
@@ -296,6 +305,7 @@ SOURCES = [
         "name": "Nunatsiaq News",
         "source_type": "Regional news",
         "rss_url": "https://nunatsiaqonline.ca/feed/",
+        "google_news_rss_url": "https://news.google.com/rss/search?q=site:nunatsiaqonline.ca&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": True,
     },
     {
@@ -303,6 +313,7 @@ SOURCES = [
         "name": "High North News",
         "source_type": "International news",
         "rss_url": "https://www.highnorthnews.com/en/rss.xml",
+        "google_news_rss_url": "https://news.google.com/rss/search?q=site:highnorthnews.com&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": True,
     },
     {
@@ -454,6 +465,7 @@ SOURCES = [
         "name": "Arctic Council",
         "source_type": "Intergovernmental",
         "rss_url": "https://arctic-council.org/en/feed/",
+        "google_news_rss_url": "https://news.google.com/rss/search?q=site:arctic-council.org&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": True,
     },
     {
@@ -461,6 +473,7 @@ SOURCES = [
         "name": "OECD — Skills",
         "source_type": "Intergovernmental",
         "rss_url": "https://www.oecd.org/en/topics/skills.xml",
+        "google_news_rss_url": "https://news.google.com/rss/search?q=OECD+skills+workforce&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": True,
     },
     {
@@ -468,6 +481,7 @@ SOURCES = [
         "name": "OECD — Social Policy",
         "source_type": "Intergovernmental",
         "rss_url": "https://www.oecd.org/en/topics/social-policy.xml",
+        "google_news_rss_url": "https://news.google.com/rss/search?q=OECD+%22social+policy%22+income&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": True,
     },
     {
@@ -475,6 +489,7 @@ SOURCES = [
         "name": "International Labour Organization",
         "source_type": "Intergovernmental",
         "rss_url": "https://www.ilo.org/rss/en",
+        "google_news_rss_url": "https://news.google.com/rss/search?q=%22International+Labour+Organization%22+OR+ILO+labour&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": True,
     },
     # ── Academic journals (RSS) ───────────────────────────────────────────────
@@ -490,6 +505,7 @@ SOURCES = [
         "name": "Arctic Journal (AINA)",
         "source_type": "Academic journal",
         "rss_url": "https://arcticjournal.com/feed/",
+        "google_news_rss_url": "https://news.google.com/rss/search?q=site:arcticjournal.com&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": True,
     },
     # ── Scraped sources (no RSS) ──────────────────────────────────────────────
@@ -516,6 +532,7 @@ SOURCES = [
         "name": "CanNor (Canadian Northern Economic Development Agency)",
         "source_type": "Federal government",
         "rss_url": None,
+        "google_news_rss_url": "https://news.google.com/rss/search?q=site:cannor.gc.ca&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": False,
         "scrape": True,
         "news_url": "https://www.cannor.gc.ca/eng/1362495730541/1362495898070",
@@ -534,6 +551,7 @@ SOURCES = [
         "name": "Government of Nunavut",
         "source_type": "P/T government",
         "rss_url": None,
+        "google_news_rss_url": "https://news.google.com/rss/search?q=site:gov.nu.ca&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": False,
         "scrape": True,
         "news_url": "https://www.gov.nu.ca/en/news",
@@ -543,6 +561,7 @@ SOURCES = [
         "name": "NORAD",
         "source_type": "Intergovernmental",
         "rss_url": None,
+        "google_news_rss_url": "https://news.google.com/rss/search?q=site:norad.mil&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": False,
         "scrape": True,
         "news_url": "https://www.norad.mil/Media/News/",
@@ -563,6 +582,7 @@ SOURCES = [
         "name": "Makivik Corporation",
         "source_type": "Indigenous",
         "rss_url": None,
+        "google_news_rss_url": "https://news.google.com/rss/search?q=site:makivik.org&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": False,
         "scrape": True,
         "news_url": "https://www.makivik.org/category/news/",
@@ -594,6 +614,7 @@ SOURCES = [
         "name": "Congress of Aboriginal Peoples",
         "source_type": "Indigenous",
         "rss_url": None,
+        "google_news_rss_url": "https://news.google.com/rss/search?q=site:abo-peoples.org&hl=en-CA&gl=CA&ceid=CA:en",
         "has_rss": False,
         "scrape": True,
         "wordpress": True,

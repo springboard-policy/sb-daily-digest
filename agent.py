@@ -39,9 +39,11 @@ analytical briefing suitable for a professional policy audience.
 You will be given a list of sources to search. Use the search_source tool \
 to fetch them — you may call multiple search_source tools in a single turn \
 to search several sources in parallel. A good batch size is 6–10 sources \
-per turn, grouped by topic. Before writing any item in the brief, you MUST \
-call fetch_article for that article's URL. This is required for every item \
-you include — not just the most important ones.
+per turn, grouped by topic. For each article you plan to include, call \
+fetch_article first to verify the content and confirm the URL is correct. \
+If fetch_article fails or returns no content (e.g. paywalled or server \
+blocked), you may still include the article using the title and excerpt \
+from search_source — do not discard it solely because full text is unavailable.
 
 You will also receive recent past briefs as context. Use them to identify \
 continuing stories and trends — if today's news connects to or develops \

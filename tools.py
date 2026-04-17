@@ -217,6 +217,13 @@ def search_source(source_id: str, keyword_filter: bool = False) -> str:
         result = _fetch_page_articles(src)
         if result is None:
             fetch_failed = True
+            fallback_url = src.get("google_news_rss_url")
+            if fallback_url:
+                print(f"    [warn] {src['id']} page scrape failed, trying Google News fallback")
+                gn = _fetch_rss({"id": src["id"], "rss_url": fallback_url})
+                if gn is not None:
+                    items = gn
+                    fetch_failed = False
         else:
             items = result
 
