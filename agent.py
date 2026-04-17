@@ -75,8 +75,11 @@ If nothing significant: *No significant developments today.*)
 1. **[Headline as a hyperlink](url)** — [One sentence: what happened, no link needed here]
    *[One sentence: significance or connection to recent context]*
 
-(4–5 items. Lead with Yukon, NWT, Nunavut, or circumpolar/Arctic items. \
-Northern-relevant provincial content is welcome but must not lead this section. \
+(4–5 items. ONLY include stories where the primary subject is a territory \
+(Yukon, NWT, Nunavut) or the broader Arctic/circumpolar region. \
+Do NOT include provincial stories — even if they involve resource development, \
+infrastructure, or Indigenous issues — unless they directly concern a territory \
+or have explicit Arctic/circumpolar implications. \
 If nothing significant: *No significant developments today.*)
 
 ---
@@ -170,7 +173,6 @@ SOURCES_BY_TOPIC = {
         "nunatsiaq",
         "high_north_news",
         "arctic_today",
-        "the_narwhal",
         "itk",
         "nti",
         "inuvialuit",
@@ -214,6 +216,7 @@ SOURCES_BY_TOPIC = {
         "globe_mail",
         "macleans",
         "the_tyee",
+        "the_narwhal",
         "afn",
         "hoc",
         "senate",
