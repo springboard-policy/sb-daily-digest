@@ -4,5 +4,4 @@ __pycache__/
 .env
 digest_*.html
 fixtures/
-costs.jsonl
 test_*.md
