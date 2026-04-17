@@ -2,9 +2,12 @@
 Keyword registry and article matching logic.
 
 Tier rules:
-  CORE  — always include if any CORE keyword from this category matches.
-  FUZZY — include if this keyword + 2 others from this category match (3 total).
-  WATCH — include if this keyword + 1 other from this category matches (2 total).
+  CORE         — always include if any CORE keyword from this category matches.
+  FUZZY        — include if this keyword + 2 others from this category match (3 total).
+  WATCH        — include if this keyword + 1 other from this category matches (2 total).
+  REQUIRED_ANY — at least one keyword from this list must be present, or the category
+                 is excluded regardless of other matches. Used to anchor categories to
+                 a specific geography or domain and filter out false positives.
 
 Matching rules:
   Short all-caps acronyms (e.g. EI, ESDC) are matched as whole words using
@@ -16,6 +19,20 @@ import re
 
 KEYWORDS = {
     "Northern infrastructure": {
+        "REQUIRED_ANY": [
+            "Arctic",
+            "subarctic",
+            "circumpolar",
+            "Nunavut",
+            "Northwest Territories",
+            "Yukon",
+            "Inuit",
+            "permafrost",
+            "icebreaker",
+            "Northwest Passage",
+            "Mackenzie Valley",
+            "northern corridor",
+        ],
         "CORE": [
             "deep-water port",
             "Northwest Passage",
@@ -204,9 +221,15 @@ def match_article(title: str, text: str) -> dict:
     results = {}
 
     for category, tiers in KEYWORDS.items():
+        required_any = tiers.get("REQUIRED_ANY", [])
+        if required_any and not any(_kw_matches(kw, combined, combined_lower) for kw in required_any):
+            continue
+
         matched = {"CORE": [], "FUZZY": [], "WATCH": []}
 
         for tier, keywords in tiers.items():
+            if tier == "REQUIRED_ANY":
+                continue
             for kw in keywords:
                 if _kw_matches(kw, combined, combined_lower):
                     matched[tier].append(kw)
