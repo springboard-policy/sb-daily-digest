@@ -37,80 +37,133 @@ HTML_TEMPLATE = """\
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SB Policy Brief — {date_str}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
 
     body {{
-      font-family: "Inter", system-ui, -apple-system, sans-serif;
-      font-size: 15px;
-      line-height: 1.65;
+      font-family: "Tw Cen MT", "Century Gothic", "Trebuchet MS", sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
       background: #fff;
-      color: #333;
+      color: #3A3A3D;
     }}
 
-    /* ── Header ── */
+    /* ── SANDWICH TOP: Header ── */
     .page-header {{
       background: #29C3EC;
       color: #fff;
-      padding: 1.5rem 2.5rem 1.25rem;
-      border-bottom: 3px solid #00698C;
+      padding: 1.5rem 2.5rem;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 4px solid #00698C;
     }}
+
+    /* Decorative circles */
+    .page-header::before {{
+      content: '';
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.10);
+      right: -130px;
+      top: -140px;
+      pointer-events: none;
+    }}
+    .page-header::after {{
+      content: '';
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.07);
+      left: -60px;
+      bottom: -80px;
+      pointer-events: none;
+    }}
+
+    /* Decorative vertical bars (bar-chart motif) */
+    .hero-bars {{
+      position: absolute;
+      right: 5%;
+      bottom: 0;
+      display: flex;
+      align-items: flex-end;
+      gap: 7px;
+      height: 100%;
+      opacity: 0.15;
+      pointer-events: none;
+    }}
+    .hero-bars span {{
+      width: 13px;
+      background: #fff;
+      border-radius: 2px 2px 0 0;
+      display: block;
+    }}
+
+    /* Left/right split layout */
+    .header-inner {{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+    }}
+    .header-left {{ text-align: left; }}
+    .header-right {{ text-align: right; }}
+
     .page-header .org {{
       font-size: 0.68rem;
-      font-weight: 600;
-      letter-spacing: 0.14em;
+      font-weight: 700;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
-      opacity: 0.75;
-      margin-bottom: 0.3rem;
+      opacity: 0.85;
+      margin-bottom: 0.2rem;
     }}
     .page-header h1 {{
-      font-size: 1.35rem;
+      font-size: 1.6rem;
       font-weight: 700;
-      letter-spacing: -0.01em;
+      letter-spacing: 0.01em;
     }}
     .page-header .dateline {{
-      font-size: 0.85rem;
-      font-weight: 400;
-      opacity: 0.85;
-      margin-top: 0.2rem;
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin-bottom: 0.3rem;
     }}
     .page-header .archive-link {{
       font-size: 0.75rem;
-      opacity: 0.7;
-      margin-top: 0.4rem;
+      opacity: 0.75;
     }}
     .page-header .archive-link a {{
       color: #fff;
       text-decoration: none;
-      border-bottom: 1px solid rgba(255,255,255,0.4);
+      border-bottom: 1px solid rgba(255,255,255,0.45);
     }}
     .page-header .archive-link a:hover {{ opacity: 1; border-bottom-color: #fff; }}
 
-    /* ── Layout ── */
+    /* ── SANDWICH MIDDLE: Content ── */
     .content {{
       max-width: 1050px;
-      margin: 2.5rem auto;
-      padding: 0 2rem 5rem;
+      margin: 2rem auto;
+      padding: 0 2.5rem 5rem;
     }}
 
-    /* ── Section headings ── */
+    /* Section headings — centred per brand guidelines */
     .brief h2 {{
-      font-size: 0.7rem;
+      font-size: 1.1rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.12em;
       color: #000;
-      margin: 3rem 0 0;
-      padding-bottom: 0.5rem;
-      border-bottom: 2px solid #29C3EC;
+      margin: 3.5rem 0 0;
+      padding-bottom: 0.6rem;
+      border-bottom: 3px solid #29C3EC;
+      text-align: center;
     }}
+    .brief > h2:first-child {{ margin-top: 0.25rem; }}
 
     .brief hr {{ display: none; }}
 
-    /* ── Numbered items ── */
+    /* Numbered items */
     .brief ol {{
       list-style: none;
       padding: 0;
@@ -120,71 +173,92 @@ HTML_TEMPLATE = """\
     .brief ol > li {{
       counter-increment: brief-item;
       position: relative;
-      padding: 1rem 0 1rem 2.25rem;
+      padding: 1.25rem 0 1.25rem 2.5rem;
       border-bottom: 1px solid #F2F2F2;
     }}
     .brief ol > li::before {{
       content: counter(brief-item);
       position: absolute;
       left: 0;
-      top: 1.1rem;
-      font-size: 0.7rem;
+      top: 1.4rem;
+      font-size: 0.72rem;
       font-weight: 700;
       color: #29C3EC;
-      width: 1.5rem;
+      width: 1.6rem;
       text-align: right;
     }}
     .brief ol > li p {{
       margin: 0 0 0.5rem;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
+      text-align: left;
     }}
     .brief ol > li p:last-child {{ margin-bottom: 0; }}
     .brief ol > li em {{
       font-style: italic;
       color: #5F8699;
-      font-size: 0.85rem;
-      line-height: 1.55;
+      font-size: 0.875rem;
+      line-height: 1.65;
     }}
 
-    /* ── Bullet lists (Sources Consulted) ── */
+    /* Bullet lists (Sources Consulted) */
     .brief ul {{
-      padding-left: 1rem;
-      margin: 0.5rem 0 0;
+      padding-left: 1.27rem;
+      margin: 0.6rem 0 0;
+      text-align: left;
     }}
     .brief ul li {{
-      margin-bottom: 0.35rem;
+      margin-bottom: 0.4rem;
       font-size: 0.875rem;
       color: #5F8699;
+      padding-left: 0.2rem;
     }}
 
-    /* ── Inline ── */
+    /* Inline */
     .brief a {{ color: #00698C; text-decoration: none; }}
     .brief a:hover {{ text-decoration: underline; color: #4295AD; }}
-    .brief p {{ margin-bottom: 0.5rem; }}
+    .brief p {{ margin-bottom: 0.5rem; text-align: left; }}
     .brief em {{ color: #5F8699; }}
 
-    /* ── Footer ── */
+    /* ── SANDWICH BOTTOM: Dark footer ── */
     .page-footer {{
+      background: #00698C;
+      color: #fff;
       text-align: center;
-      font-size: 0.75rem;
-      color: #5F8699;
-      padding: 1.5rem;
-      border-top: 1px solid #F2F2F2;
+      font-size: 0.78rem;
+      padding: 1.75rem 1.5rem;
     }}
 
     @media (max-width: 600px) {{
-      .page-header {{ padding: 1.25rem 1rem; }}
-      .content {{ padding: 0 1rem 3rem; }}
+      .page-header {{ padding: 1.25rem; }}
+      .header-inner {{ flex-direction: column; align-items: flex-start; gap: 0.5rem; }}
+      .header-right {{ text-align: left; }}
+      .hero-bars {{ display: none; }}
+      .content {{ padding: 0 1.25rem 3rem; }}
     }}
   </style>
 </head>
 <body>
 
 <header class="page-header">
-  <div class="org">Springboard</div>
-  <h1>Daily Policy Brief</h1>
-  <div class="dateline">{date_long}</div>
-  <div class="archive-link"><a href="archive.html">Past briefs &rarr;</a></div>
+  <div class="hero-bars" aria-hidden="true">
+    <span style="height:30%"></span>
+    <span style="height:60%"></span>
+    <span style="height:45%"></span>
+    <span style="height:85%"></span>
+    <span style="height:55%"></span>
+    <span style="height:70%"></span>
+    <span style="height:40%"></span>
+  </div>
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="org">Springboard</div>
+      <h1>Daily Policy Brief</h1>
+    </div>
+    <div class="header-right">
+      <div class="dateline">{date_long}</div>
+      <div class="archive-link"><a href="archive.html">Past briefs &rarr;</a></div>
+    </div>
+  </div>
 </header>
 
 <main class="content">
@@ -314,39 +388,92 @@ def _build_archive() -> None:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SB Policy Brief — Archive</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
     body {{
-      font-family: "Inter", system-ui, -apple-system, sans-serif;
-      font-size: 15px;
-      line-height: 1.65;
+      font-family: "Tw Cen MT", "Century Gothic", "Trebuchet MS", sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
       background: #fff;
-      color: #333;
+      color: #3A3A3D;
     }}
-    .page-header {{ background: #29C3EC; color: #fff; padding: 1.5rem 2.5rem 1.25rem; border-bottom: 3px solid #00698C; }}
-    .page-header .org {{ font-size: 0.68rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.75; margin-bottom: 0.3rem; }}
-    .page-header h1 {{ font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; }}
-    .page-header .sub {{ font-size: 0.85rem; opacity: 0.85; margin-top: 0.2rem; }}
-    .page-header .sub a {{ color: #fff; text-decoration: none; }}
-    .page-header .sub a:hover {{ text-decoration: underline; }}
-    .content {{ max-width: 560px; margin: 2.5rem auto; padding: 0 1.5rem 4rem; }}
-    h2 {{ font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
-          color: #000; border-bottom: 2px solid #29C3EC; padding-bottom: 0.5rem; margin-bottom: 1.25rem; }}
+    .page-header {{
+      background: #29C3EC;
+      color: #fff;
+      padding: 3.5rem 2.5rem 3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 4px solid #00698C;
+    }}
+    .page-header::before {{
+      content: '';
+      position: absolute;
+      width: 420px; height: 420px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.10);
+      right: -130px; top: -110px;
+      pointer-events: none;
+    }}
+    .page-header::after {{
+      content: '';
+      position: absolute;
+      width: 240px; height: 240px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.07);
+      left: -70px; bottom: -90px;
+      pointer-events: none;
+    }}
+    .hero-bars {{
+      position: absolute; right: 5%; bottom: 0;
+      display: flex; align-items: flex-end; gap: 7px;
+      height: 70%; opacity: 0.18; pointer-events: none;
+    }}
+    .hero-bars span {{ width: 13px; background: #fff; border-radius: 2px 2px 0 0; display: block; }}
+    .header-inner {{ display: flex; justify-content: space-between; align-items: center; position: relative; }}
+    .header-left {{ text-align: left; }}
+    .header-right {{ text-align: right; }}
+    .page-header .org {{ font-size: 0.68rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.85; margin-bottom: 0.2rem; }}
+    .page-header h1 {{ font-size: 1.6rem; font-weight: 700; }}
+    .page-header .sub {{ font-size: 0.75rem; opacity: 0.75; }}
+    .page-header .sub a {{ color: #fff; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.45); }}
+    .page-header .sub a:hover {{ opacity: 1; border-bottom-color: #fff; }}
+    .content {{ max-width: 560px; margin: 3rem auto; padding: 0 2rem 5rem; }}
+    h2 {{ font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+          color: #000; border-bottom: 3px solid #29C3EC; padding-bottom: 0.6rem; margin-bottom: 1.5rem; text-align: center; }}
     ul {{ list-style: none; padding: 0; }}
-    li {{ padding: 0.65rem 0; border-bottom: 1px solid #F2F2F2; font-size: 0.95rem; }}
+    li {{ padding: 0.75rem 0; border-bottom: 1px solid #F2F2F2; font-size: 0.95rem; }}
     a {{ color: #00698C; text-decoration: none; }}
     a:hover {{ text-decoration: underline; color: #4295AD; }}
-    .page-footer {{ text-align: center; font-size: 0.75rem; color: #5F8699; padding: 1.5rem; border-top: 1px solid #F2F2F2; }}
+    .page-footer {{ background: #00698C; color: #fff; text-align: center; font-size: 0.78rem; padding: 1.75rem 1.5rem; }}
+    @media (max-width: 600px) {{
+      .page-header {{ padding: 1.25rem; }}
+      .header-inner {{ flex-direction: column; align-items: flex-start; gap: 0.5rem; }}
+      .header-right {{ text-align: left; }}
+      .hero-bars {{ display: none; }}
+    }}
   </style>
 </head>
 <body>
 <header class="page-header">
-  <div class="org">Springboard</div>
-  <h1>Daily Policy Brief</h1>
-  <div class="sub"><a href="index.html">&larr; Today's brief</a></div>
+  <div class="hero-bars" aria-hidden="true">
+    <span style="height:30%"></span>
+    <span style="height:60%"></span>
+    <span style="height:45%"></span>
+    <span style="height:85%"></span>
+    <span style="height:55%"></span>
+    <span style="height:70%"></span>
+    <span style="height:40%"></span>
+  </div>
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="org">Springboard</div>
+      <h1>Daily Policy Brief</h1>
+    </div>
+    <div class="header-right">
+      <div class="sub"><a href="index.html">&larr; Today's brief</a></div>
+    </div>
+  </div>
 </header>
 <main class="content">
   <h2>Archive</h2>
