@@ -68,7 +68,10 @@ Output Format — produce EXACTLY this structure in Markdown:
    *...*
 
 (4–5 items. Only include genuinely relevant developments. \
-If nothing significant: *No significant developments today.*)
+If nothing significant: write only the single line \
+*No significant developments today.* — do not explain why, \
+do not describe what sources returned, do not comment on content \
+that was not relevant. Just the single line, nothing else.)
 
 ---
 
@@ -77,12 +80,19 @@ If nothing significant: *No significant developments today.*)
 1. **[Headline as a hyperlink](url)** — [One sentence: what happened, no link needed here]
    *[One sentence: significance or connection to recent context]*
 
-(4–5 items. ONLY include stories where the primary subject is a territory \
+(4–5 items. ONLY include stories that are primarily ABOUT infrastructure — \
+transportation, energy, housing, telecommunications networks, military/defence \
+installations, resource extraction, or built environment — in a territory \
 (Yukon, NWT, Nunavut) or the broader Arctic/circumpolar region. \
-Do NOT include provincial stories — even if they involve resource development, \
-infrastructure, or Indigenous issues — unless they directly concern a territory \
-or have explicit Arctic/circumpolar implications. \
-If nothing significant: *No significant developments today.*)
+A story that is merely geographically set in the North but is about education, \
+health, social policy, or governance does NOT belong here — place it in \
+whichever thematic section fits, or drop it entirely if it does not fit \
+Skills Policy or Social Assistance either. Do NOT include provincial stories unless \
+they have direct Arctic/circumpolar infrastructure implications. \
+If nothing significant: write only the single line \
+*No significant developments today.* — do not explain why, \
+do not describe what sources returned, do not comment on content \
+that was not relevant. Just the single line, nothing else.)
 
 ---
 
@@ -91,7 +101,10 @@ If nothing significant: *No significant developments today.*)
 1. **[Headline as a hyperlink](url)** — [One sentence: what happened, no link needed here]
    *[One sentence: significance or connection to recent context]*
 
-(4–5 items. If nothing significant: *No significant developments today.*)
+(4–5 items. If nothing significant: write only the single line \
+*No significant developments today.* — do not explain why, \
+do not describe what sources returned, do not comment on content \
+that was not relevant. Just the single line, nothing else.)
 
 ---
 
@@ -138,6 +151,8 @@ Guidelines:
   Northern & Arctic Infrastructure even if it has secondary social consequences. \
   A story does not belong in Social Assistance unless it directly concerns \
   income support, benefits, poverty, housing assistance, or social services. \
+  CPI and inflation data belong in Social Assistance (cost-of-living and \
+  income adequacy implications), not Skills Policy. \
   If your own analysis says "this is primarily an X story," place it in X.
 - Exclude procedural stories: do NOT include Access to Information requests, \
   routine government appointments, administrative decisions, or process stories \
@@ -166,6 +181,8 @@ SOURCES_BY_TOPIC = {
         "ilo",
         "statcan",
         "cpp_journal",
+        "diversity_institute",  # keyword-filtered
+        "workbc",               # keyword-filtered
     ],
     "Northern & Arctic Infrastructure": [
         "national_defence",
@@ -191,6 +208,7 @@ SOURCES_BY_TOPIC = {
         "arctic_institute",
         "arctic_journal",
         "atlantic_council",
+        "cipser",               # keyword-filtered
     ],
     "Social Assistance & Income Security": [
         "maytree",
@@ -203,6 +221,7 @@ SOURCES_BY_TOPIC = {
         "cap",
         "pbo",
         "auditor_general",
+        "canadian_review_social_policy",  # keyword-filtered
     ],
     "General (all topics)": [
         # National news
@@ -283,7 +302,12 @@ TOOLS = [
 
 # ── Tool dispatcher ───────────────────────────────────────────────────────────
 
-GENERAL_SOURCES  = set(SOURCES_BY_TOPIC["General (all topics)"])
+GENERAL_SOURCES  = set(SOURCES_BY_TOPIC["General (all topics)"]) | {
+    "diversity_institute",
+    "workbc",
+    "cipser",
+    "canadian_review_social_policy",
+}
 ALL_SOURCE_IDS   = [sid for ids in SOURCES_BY_TOPIC.values() for sid in ids]
 
 _stats:           dict       = {"searched": 0, "with_content": 0, "errors": 0, "error_sources": []}
@@ -483,8 +507,10 @@ def run_briefing(fixtures_path: str | None = None) -> str:
             "\n\nIMPORTANT: Today is Monday. The sources cover the past 72 hours "
             "(Friday through Sunday). Each article result includes its publication "
             "day in brackets — e.g. [Friday], [Saturday], [Sunday]. "
-            "Include the day in the news line for each item, like this: "
-            "**[Friday] Headline** — one sentence with inline link."
+            "Include the day in the news line for each item. "
+            "Put the day label BEFORE the hyperlink, not inside it, to avoid "
+            "breaking markdown — like this: "
+            "[Friday] **[Headline](url)** — one sentence."
         )
 
     # Structure messages so the stable context block and system prompt are
