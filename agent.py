@@ -67,7 +67,16 @@ Output Format — produce EXACTLY this structure in Markdown:
 2. **[Headline as a hyperlink](url)** — ...
    *...*
 
-(4–5 items. Only include genuinely relevant developments. \
+(4–5 items. Only include stories whose PRIMARY subject is skills training, \
+workforce development, labour market policy, or employment programs — \
+with a direct Canadian policy angle. Exclude: international or global statistics \
+(e.g. ILO global figures, OECD averages) that do not contain Canadian-specific \
+findings or have clear implications for Canadian federal or provincial policy; \
+health, housing, demographic, or social equity research that has only incidental \
+workforce implications but is not fundamentally about skills or employment policy. \
+The test is: would a Canadian skills policy practitioner consider this core to \
+their file? If the connection to skills or workforce development requires a \
+multi-step analytical stretch, exclude it. \
 If nothing significant: write only the single line \
 *No significant developments today.* — do not explain why, \
 do not describe what sources returned, do not comment on content \
