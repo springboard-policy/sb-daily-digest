@@ -69,14 +69,25 @@ Output Format — produce EXACTLY this structure in Markdown:
 
 (4–5 items. Only include stories whose PRIMARY subject is skills training, \
 workforce development, labour market policy, or employment programs — \
-with a direct Canadian policy angle. Exclude: international or global statistics \
-(e.g. ILO global figures, OECD averages) that do not contain Canadian-specific \
-findings or have clear implications for Canadian federal or provincial policy; \
-health, housing, demographic, or social equity research that has only incidental \
-workforce implications but is not fundamentally about skills or employment policy. \
-The test is: would a Canadian skills policy practitioner consider this core to \
-their file? If the connection to skills or workforce development requires a \
-multi-step analytical stretch, exclude it. \
+with a direct Canadian policy angle. \
+Explicitly EXCLUDE: \
+• International or global statistics (e.g. ILO global figures, OECD averages) \
+  without Canadian-specific findings or clear implications for Canadian policy; \
+• Worker health, safety, wellbeing, or mental health — these are occupational \
+  health stories, not skills policy (chronic pain programs, EAP services, \
+  workplace injury rates, etc.); \
+• Childcare system access, quality, or affordability — this belongs in Social \
+  Assistance, not Skills Policy (exception: stories specifically about the \
+  childcare workforce supply or ECE training pipelines); \
+• Health, demographic, or social equity research about immigrant or racialized \
+  populations that is not directly about employment programs or credential \
+  recognition; \
+• Local or operational staffing incidents (e.g. a single school or facility \
+  losing staff) unless they document a systemic, policy-level failure — not as \
+  standalone items. \
+The test: would a federal or provincial skills policy practitioner consider \
+this core to their file? If the answer requires a multi-step analytical \
+stretch, exclude it. \
 If nothing significant: write only the single line \
 *No significant developments today.* — do not explain why, \
 do not describe what sources returned, do not comment on content \
@@ -93,11 +104,18 @@ that was not relevant. Just the single line, nothing else.)
 transportation, energy, housing, telecommunications networks, military/defence \
 installations, resource extraction, or built environment — in a territory \
 (Yukon, NWT, Nunavut) or the broader Arctic/circumpolar region. \
-A story that is merely geographically set in the North but is about education, \
-health, social policy, or governance does NOT belong here — place it in \
-whichever thematic section fits, or drop it entirely if it does not fit \
-Skills Policy or Social Assistance either. Do NOT include provincial stories unless \
-they have direct Arctic/circumpolar infrastructure implications. \
+A story that is merely geographically set in the North does NOT belong here \
+unless it is fundamentally about building, operating, funding, or governing \
+physical infrastructure. Explicitly EXCLUDE: \
+• Policing, organized crime, law enforcement, or public safety stories — \
+  even if they involve a northern airport, port, or facility (the infrastructure \
+  is incidental; the story is about crime or policing); \
+• Governance and administrative decisions that do not involve physical \
+  infrastructure (e.g. time zone changes, scheduling, regulatory processes); \
+• Education, health, social policy, rights, or reconciliation stories set in \
+  the North — place in whichever thematic section fits, or drop entirely. \
+Do NOT include provincial stories unless they have direct Arctic/circumpolar \
+infrastructure implications. \
 If nothing significant: write only the single line \
 *No significant developments today.* — do not explain why, \
 do not describe what sources returned, do not comment on content \
@@ -110,7 +128,18 @@ that was not relevant. Just the single line, nothing else.)
 1. **[Headline as a hyperlink](url)** — [One sentence: what happened, no link needed here]
    *[One sentence: significance or connection to recent context]*
 
-(4–5 items. If nothing significant: write only the single line \
+(4–5 items. This section covers income transfers, benefit programs, poverty \
+reduction, housing assistance, food security programs, and income adequacy \
+policy — i.e. the direct cash and in-kind support systems for low-income \
+people. Explicitly EXCLUDE: \
+• Historical, rights, or political stories about Indigenous or other \
+  populations — even if they involve marginalized groups, they are not \
+  social assistance stories unless they directly concern benefit programs; \
+• Social or epidemiological research about demographic groups \
+  (loneliness, health access, social isolation) that is not directly \
+  connected to income support or benefit program design; \
+• Policing, surveillance, or governance stories. \
+If nothing significant: write only the single line \
 *No significant developments today.* — do not explain why, \
 do not describe what sources returned, do not comment on content \
 that was not relevant. Just the single line, nothing else.)
@@ -158,11 +187,14 @@ Guidelines:
 - Section placement: put each story in the section that matches its primary \
   subject matter. An environmental or resource development story belongs in \
   Northern & Arctic Infrastructure even if it has secondary social consequences. \
-  A story does not belong in Social Assistance unless it directly concerns \
-  income support, benefits, poverty, housing assistance, or social services. \
+  Social Assistance means income transfers, benefit programs, poverty reduction, \
+  and housing/food assistance — NOT social research, historical grievances, \
+  rights claims, or policing. \
   CPI and inflation data belong in Social Assistance (cost-of-living and \
   income adequacy implications), not Skills Policy. \
-  If your own analysis says "this is primarily an X story," place it in X.
+  If a story does not fit cleanly in any section, drop it rather than \
+  forcing a placement. If your own analysis says "this is primarily an X story," \
+  place it in X.
 - Exclude procedural stories: do NOT include Access to Information requests, \
   routine government appointments, administrative decisions, or process stories \
   unless they directly reveal substantive new policy content relevant to the \
