@@ -155,6 +155,12 @@ Guidelines:
   in the sentence (e.g. no "read the report" or "see here" links). \
   IMPORTANT: use only the exact URL returned by search_source for that article. \
   Never guess, construct, or reuse a URL from a different article or source.
+- Attribution: the news line must reflect who actually wrote or published the \
+  piece. If an organization or person is quoted in an article written by \
+  someone else, do NOT write the summary as if they authored it. Name the \
+  outlet or author: "A Tyee article quotes FSC executive director Noel Baldwin \
+  on..." or "CBC reports that..." — not "FSC argues that..." or "FSC profiles \
+  a Douglas College program..." unless FSC actually wrote and published it.
 - Analysis line (italicised): one sentence on significance, policy implication, \
   or broader context — draw on your knowledge of Canadian policy, relevant \
   research, historical precedents, institutional dynamics, or recent trends \
